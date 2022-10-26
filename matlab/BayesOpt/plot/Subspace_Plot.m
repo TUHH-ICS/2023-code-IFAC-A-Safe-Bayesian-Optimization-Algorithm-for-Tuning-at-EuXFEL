@@ -18,7 +18,7 @@ Y=Y(id);
 X=data{1,1};
 X=X(id);
 
-n=16;
+n=3;
 yt = data{1,2}{n,1};
 xt = data{1,1}{n,1};
 o = data{1,2}{n-1,1};
@@ -93,7 +93,8 @@ opts.newSafeOpt = 0;
 opts.minFunc.mode=2;
 
 hyp = gpTrain(hyp,inf_,mean_,cov_,lik_,xt,yt,opts,[]);
-plot_post(hyp,inf_,mean_,cov_,lik_,xt,yt,build_testP(cond(algo_data.l,:),opts.samples),algo_data,opts)
+%%
+plot_post(hyp,inf_,mean_,cov_,lik_,xt,yt,build_testP(cond(1,:),1000),algo_data,opts)
 
 
 function Xs=build_testP(cond, samples)

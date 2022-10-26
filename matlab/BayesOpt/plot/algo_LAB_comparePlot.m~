@@ -8,7 +8,7 @@ set(groot, 'defaultLegendFontSize',12)
 
 x=[];
 % load('Lab_MO_Origami_dim1_random.mat')
-load('LineBO_descent_Lab_1sec/data.mat')
+load('LineBO_descent_Lab_sec/data.mat')
 data_dim1_1 = data(:,2);
 par_dim = data(:,1);
 %unlocks(1) = sum(cell2mat(data(:,end)));

@@ -42,7 +42,7 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
         fun_in = obj_func;
         fun_out = [];
     end
-    hyp_old = hyp;
+    
     coolDown = opts.trainGP.coolDown;
     gp_cd = 0;
     checkGP_train = false;
@@ -99,8 +99,7 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
             algo_data.name = 'lineBO';
             algo_data.plot = opts.plot;
             algo_data.cond = cond;
-            algo_data.y0 = AlgoStruct.post.yopt;
-            algo_data.x0 = AlgoStruct.post.xopt;
+            algo_data.y0 = AlgoStruct.post.y0;
         otherwise
             algo_data.plot = opts.plot;
             counter = 1;
@@ -171,7 +170,7 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
 
         if checkGP_train && gp_cd == 0
             disp(newline+"cov hyp: "+num2str(hyp.cov')+"    lik hyp: "+num2str(hyp.lik))
-            hyp=gpTrain(hyp_old,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),opts);
+            hyp=gpTrain(hyp,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),opts);
             gp_cd = coolDown;
             disp(newline+"cov hyp: "+num2str(hyp.cov')+"    lik hyp: "+num2str(hyp.lik))
 %             try
@@ -229,22 +228,17 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
 %     figure(10)
 %     plot(xs,mu)
     % find optimal parameters
-    [~,~,mu,~]=gp(hyp,inf_, mean_, cov_, lik_, xt(algo_data.start+1:end,:), yt(algo_data.start+1:end),xt(algo_data.start+1:end,:));
-    beta = 0.3;
-    [yopt,I] = obj_eval((1-beta)*yt(algo_data.start+1:end)+beta*(mu));
-    if yopt < algo_data.y0
-        xopt = xt(algo_data.start+I,:);
-    else
-        xopt=algo_data.x0;
-        yopt = algo_data.y0;
-    end
+    [~,~,mu,~]=gp(hyp,inf_, mean_, cov_, lik_, xt(algo_data.start:end), yt(algo_data.start:end),xt(algo_data.start:end));
+    beta = 0.1;
+    [yopt,I] = obj_eval((1-beta)*yt+beta*(mu));
+    xopt = xt(I,:);
 
     % print optimal parameters to screen 
-    print_vector("x0 = ", algo_data.x0)
+    print_vector("x0 = ", xt(algo_data.start,:))
     print_vector("xopt = ", xopt)
-    print_vector("y0 = ",algo_data.y0)
+    print_vector("y0 = ", obj_eval(yt(1:algo_data.start,:)))
     print_vector("yopt = ", yopt)
-%     pause(2)
+    pause(2)
 end
 
 

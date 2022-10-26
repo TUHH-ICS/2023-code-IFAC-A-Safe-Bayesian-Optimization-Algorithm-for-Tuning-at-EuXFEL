@@ -79,9 +79,9 @@ opts.safeOpts.thresholdOrder = 1;
 opts_lBO.maxIt = 50;
 opts_lBO.sharedGP = true;
 opts_lBO.subspaceDim = 1;
-opts_lBO.m = 4;
+% opts_lBO.m = 4;
 %opts_lBO.dim_combinations = [3;4;5;6];
-opts_lBO.oracle = 'random';
+opts_lBO.oracle = 'descent';
 opts_lBO.alpha = 0.04;
 opts.dir_timeData="/home/luebsen/bayesopt/bayesianoptimization/data/";
 meas_mean = 1;
@@ -138,7 +138,6 @@ for i = 1:size(X0,1)
     data{i,5} = counter;
     time_str = load(opts.dir_timeData+'time_data.mat');
     data{i,6} = time_str.time;
-    data{i,7} = xopt;
     counter = 0;
     save(dir_+'counter_unlock.mat','counter');
     time = 0;
@@ -150,11 +149,7 @@ end
 %save("Lab_data_dim1_random.mat",'data')
 
 %%
-fun = @(params) LAB_readWrite(params, addresses, 10, 10.5, lock_status, jitter_addr,stepsize,1,kphi,cond_t,dir_, meas_mean);
-for i = 1:10
-    x=data{i,4};
-    data{i,7}=fun(x);
-end
+    fun([-1.00000, -0.71437, -0.69697, -0.69697]);
 
 %%
 X0 = zeros(9,4);

@@ -32,7 +32,7 @@ function data = LAB_readWrite(params,addr,duration,freq, lock_addr, jitter_addr,
        end
     end
     pause(0.5)
-    data = readData(addr{end},duration,freq,lock_addr,jitter_addr,kphi,dir,mean_);
+    data = readData(addr(end-1:end),duration,freq,lock_addr,jitter_addr,kphi,dir,mean_);
 end
 
 function writeData(addr,param,param_old,stepsize,t)
@@ -64,22 +64,33 @@ function [data]=readData(addr,duration,freq,lock_addr,jitter_addr,kphi,dir,mean_
              st=tic;
             while ~checkLockStatus(lock_addr)
                 pause(3)
-                if toc(st) > 310
+                if toc(st) > 40
                     s = input("Can't lock system, set value manually by writing 'user' or continue by pressing 'enter': ",'s');
                     if strcmp(s,'user')
                         data = input("Set value: ");
                         jitters=100*ones(1,length(jitter_addr)+1);
+                        return;
                     else
                         st = tic;
                         continue;
                     end
-                    break
                 end
             end
          end
     
-       data_str = doocsread(addr);
-       jitter(i) = data_str.data*kphi;
+%        data_str = doocsread(addr);
+        timest=[0,1];
+        signals = zeros([32768,2]);
+        while timest(1) ~= timest(2)
+           for j = 1:length(addr)
+                data_str = doocsread(addr{j});
+                signals(:,j) = data_str.data.d_spect_array_val;
+                timest(j)=data_str.timestamp;
+           end
+    %         pause(1)
+        end
+        jitter(i) = kphi*std(diff(signals,1,2),1); 
+%        jitter(i) = data_str.data*kphi;
        for l = 1:length(jitter_addr)
            temp_str = doocsread(jitter_addr{l});
            jitters(i,l) = temp_str.data;
@@ -92,7 +103,7 @@ function [data]=readData(addr,duration,freq,lock_addr,jitter_addr,kphi,dir,mean_
         data = median(jitter);
     end
     
-    std_dev = std(jitter);
+    std_dev = std(jitter,1);
     jit_str = load(dir+'/jitter_data','jitter_data');
     jitter_data = jit_str.jitter_data;
     jitter_data(end+1,:) = [mean(jitters,1),std_dev];

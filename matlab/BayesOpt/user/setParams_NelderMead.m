@@ -14,7 +14,7 @@ function varargout= setParams_NelderMead(params,addr,duration,freq, lock_addr, j
     % the largest jump within time 't'
     % kphi: constant to determine the jitter in [fs]
     % dir: directory where data like in-loop jitters should be saved
-    % mean_: defines if the mean (mean_=1) or median (mean_=0) should be
+    % mean_: defines whether the mean (mean_=1) or median (mean_=0) should be
     % applied over the jitters
     D = length(params);
     params_old = zeros(1,D);
@@ -22,17 +22,17 @@ function varargout= setParams_NelderMead(params,addr,duration,freq, lock_addr, j
         data_str = doocsread(addr{i});
         params_old(i)=round(data_str.data,6);
     end
-    params = transformParams(params,cond);
-    disp(params) 
+%     params = transformParams(params,cond);
+    disp("parameters"+string(params)) 
     counter=1:D;
     counter=counter(abs(params_old-params) > 10e-6);
     %disp(counter)
     for i=counter
        writeData(addr{i},params(i),params_old(i),stepsize,t)
     end
-    pause(1)
+    pause(0.1)
     %pause(2)
-    [data,jitters] = readData(addr{end},duration,freq,lock_addr,jitter_addr,kphi);
+    [data,jitters] = readData(addr(end-1:end),duration,freq,lock_addr,jitter_addr,kphi);
     varargout{1} = data;
     if nargout == 2
        varargout{2} = jitters;
@@ -58,55 +58,57 @@ function [data,jitters]=readData(addr,duration,freq,lock_addr,jitter_addr,kphi)
     iter = ceil(time/times);
     jitter = zeros(iter,1);
     jitters = zeros(iter,length(jitter_addr));
-        for j = 1:1
-            for i = 1:iter
-                 if ~checkLockStatus(lock_addr)
-                     count_str=load('/home/luebsen/master/master_thesis/matlab/own_lab/test/counter_unlock.mat');
-                     counter = count_str.counter;
-                     counter = counter + 1;
-                     save('/home/luebsen/master/master_thesis/matlab/own_lab/test/counter_unlock.mat','counter');
-                     st=tic;
-                    while ~checkLockStatus(lock_addr)
-                        pause(3)
-                        if toc(st) > 31
-                            s = input("Can't lock system, set value manually by writing 'user' or continue by pressing 'enter': ",'s');
-                            if strcmp(s,'user')
-                                data = input("Set value: ");
-                                jitters=100*ones(1,length(jitter_addr)+1);
-                            else
-                                st = tic;
-                                continue;
-                            end
-                            return
-                        end
+    for i = 1:iter
+         if ~checkLockStatus(lock_addr)
+             count_str=load('/home/luebsen/master/master_thesis/matlab/own_lab/test/counter_unlock.mat');
+             counter = count_str.counter;
+             counter = counter + 1;
+             save('/home/luebsen/master/master_thesis/matlab/own_lab/test/counter_unlock.mat','counter');
+             st=tic;
+            while ~checkLockStatus(lock_addr)
+                pause(3)
+                if toc(st) > 31
+                    s = input("Can't lock system, set value manually by writing 'user' or continue by pressing 'enter': ",'s');
+                    if strcmp(s,'user')
+                        data = input("Set value: ");
+                        jitters=100*ones(1,length(jitter_addr)+1);
+                    else
+                        st = tic;
+                        continue;
                     end
-                 end
-            
-               data_str = doocsread(addr);
-               jitter(i) = data_str.data*kphi;
-               for l = 1:length(jitter_addr)
-                   temp_str = doocsread(jitter_addr{l});
-                   jitters(i,l) = temp_str.data;
-               end
-               pause(times)
+                    return
+                end
+            end
+         end
+
+        timest=[0,1];
+        signals = zeros([32768,2]);
+        while timest(1) ~= timest(2)
+           for j = 1:length(addr)
+                data_str = doocsread(addr{j});
+                signals(:,j) = data_str.data.d_spect_array_val;
+                timest(j)=data_str.timestamp;
            end
-           data(j) = median(jitter);
-           std_dev(j) = std(jitter);
-           if  std_dev(j) < 0.2
-               break
-           end
+    %         pause(1)
         end
+        jitter(i) = kphi*std(diff(signals,1,2),1); 
+        for l = 1:length(jitter_addr)
+           temp_str = doocsread(jitter_addr{l});
+           jitters(i,l) = temp_str.data;
+        end
+        pause(times)
+   end
+   data(j) = mean(jitter);
+   std_dev(j) = std(jitter);
     std_dev = std_dev(j);
     data = data(j);
-    val_str=load('/home/luebsen/master/master_thesis/matlab/own_lab/test/val.mat');
+    val_str=load('/home/luebsen/bayesopt/bayesianoptimization/data/val.mat');
     val = val_str.val;
     val(end+1,1) = data;
     val(end,2) = std_dev;
-    save('/home/luebsen/master/master_thesis/matlab/own_lab/test/val.mat','val');
+    save('/home/luebsen/bayesopt/bayesianoptimization/data/val.mat','val');
     jitters = [mean(jitters,1),std_dev];
-    disp(data)
-    disp(jitters)
-    disp(std_dev)
+    disp("measured value: "+string(data))
 end
 
 function b=checkLockStatus(lock_addr)

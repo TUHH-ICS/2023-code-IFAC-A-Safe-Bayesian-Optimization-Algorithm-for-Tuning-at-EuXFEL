@@ -10,7 +10,7 @@ function [xopt, X, Y, DIM] = lineBO(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,c
     oldOpts_lineBO.dim_combinations = []; % restrict subspace combinations eg. [1;2;5;6] or [1,2;3,4;5,6]
     oldOpts_lineBO.m = []; % number of evaluations for "descent" oracle
     oldOpts_lineBO.alpha = 0.01; % stepsize also "descent" oracle
-    oldOpts_lineBO.obj_eval = @(y1,y2) y1 < y2-0.01; % could be a function handle with 2 inputs and boolean output: defines whether the subspace optimization improved the performance
+    oldOpts_lineBO.obj_eval = @(y1,y2) y1 < y2-0.1; % could be a function handle with 2 inputs and boolean output: defines whether the subspace optimization improved the performance
     oldOpts_lineBO.maxProb = false; % maximization problem
 
     algoStruct.algo = 'lineBO';
@@ -64,8 +64,8 @@ function [xopt, X, Y, DIM] = lineBO(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,c
 
     for i=1:opts_lineBO.maxIt
         fprintf("\n\n BO subspace no. %d/%d\n\n",i,opts_lineBO.maxIt)
-        [yopt,I] = obj_eval(yt);
-        xopt = xt(I,:);
+%         [yopt,I] = obj_eval(yt);
+%         xopt = xt(I,:);
         switch opts_lineBO.oracle
             case 'random'
                 l = randomOrcale(l_t,opts_lineBO.dim_combinations);
@@ -85,11 +85,13 @@ function [xopt, X, Y, DIM] = lineBO(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,c
             algoStruct.post.x = xopt;
             algoStruct.post.y = yopt;
         end
+        algoStruct.post.yopt = yt_old;
+        algoStruct.post.xopt = xopt;
         DIM(i,1:opts_lineBO.subspaceDim) = l;
         fprintf("Dim: %d\n",algoStruct.subspace)
         pause(1)
-        [~, xt, yt] = bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,cond,opts_BO,xopt,algoStruct);
-        yt_new = obj_eval(yt);
+        [xopt,yt_new, xt, yt] = bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,cond,opts_BO,xopt,algoStruct);
+%         yt_new = obj_eval(yt);
         %func = @(x) normcdf(x,yt_new,std_).*normpdf(x,yt_old,std_);
         if opts_lineBO.obj_eval(yt_new,yt_old)
             l_t = buildObservedArray(opts_lineBO,D);
@@ -182,7 +184,7 @@ function [l,xt,yt] = descentOracle(hyp,inf_,mean_,cov_,lik_,fun,xt,yt,xopt,opts,
         
     end
     [~,~,mu,~,~] = gp(hyp,inf_,mean_,cov_,lik_,xt,yt,xu);
-    mu_g = mu-yopt;
+    mu_g = (mu-yopt)./vecnorm(xopt-xu,2,2);
     [mu_gs,I] = sort(mu_g);
     disp([mu_gs I])
     disp(l_t)

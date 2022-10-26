@@ -85,7 +85,7 @@ grid on
 % legend("mean(J(t))","$\mu$","$\mu \pm \sigma$",'interpreter','latex')
 
 figure(2)
-ts = 1/times;
+ts = 3/times;
 f=zeros(floor(iter/ts),1);
 for i=1:floor(iter/ts)
     f(i)=mean(jitter((i-1)*ts+1:i*ts));
@@ -102,7 +102,7 @@ grid on
 legend("mean(J(t))","$\mu$","$\mu \pm \sigma$",'interpreter','latex')
 
 figure(3)
-ts = 1/times;
+ts = 3/times;
 f=zeros(floor(iter/ts),1);
 for i=1:floor(iter/ts)
     f(i)=median(jitter((i-1)*ts+1:i*ts));

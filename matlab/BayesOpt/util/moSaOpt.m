@@ -71,19 +71,20 @@ M_re = setdiff(M,G_re,'rows');
 
 if ~isempty(G)
     A = G; 
-    acq_val = w(A) / safeOpts.beta;
-    if all(abs(acq_val) < searchCond)
-        nacq = acq_val;
-    elseif length(algo_data.l) == 1
-        diff_p=xt(end,algo_data.l) - G;
-        c = abs(acq_val)>= searchCond;
-        [~,I]=min(abs(diff_p(c)));
-        A = G(c);
-        nacq = acq_val;
-        nacq(I) = min(acq_val)-1;
-    else
-        nacq = acq_val;
-    end
+    nacq = w(A) / safeOpts.beta;
+%     acq_val = w(A) / safeOpts.beta;
+%     if all(abs(acq_val) < searchCond)
+%         nacq = acq_val;
+%     elseif length(algo_data.l) == 1
+%         diff_p=xt(end,algo_data.l) - G;
+%         c = abs(acq_val)>= searchCond;
+%         [~,I]=min(abs(diff_p(c)));
+%         A = G(c);
+%         nacq = acq_val;
+%         nacq(I) = min(acq_val)-1;
+%     else
+%         nacq = acq_val;
+%     end
 else 
     nacq = 0;
 end
