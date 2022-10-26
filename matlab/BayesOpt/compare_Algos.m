@@ -131,8 +131,8 @@ if N_L == 0
     scale = repmat(scale,[N+N_L,1]);
 else
     scale =[];
-    scale1 = [1/5; 1/2];
-    scale2 = [1/5; 1/5];
+    scale1 = [1/8; 1/5];
+    scale2 = [1/8; 1/8];
     for i = 1:N+N_L
         if mod(i,2)
             scale=[scale;scale1];
@@ -148,7 +148,7 @@ inf_ = {@infGaussLik};
 mean_ = {@meanConst};
 lik_ = {@likGauss};
 cov_ = {@(varargin)covMaternard(3,varargin{:})};
-hyp.lik = log(1e-5);
+hyp.lik = log(0.5);
 hyp.mean = 40;
 hyp.cov = log([(cond(:,2)-cond(:,1)).*scale;15]);
 acq = {@EI};
@@ -178,9 +178,9 @@ X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0
 %x0 = [25,24,18,0.43,7,7.4];
 %x0 = [3.80981, 24.67182, 0.80326, 12.43287, 21.95565, 23.44122];
 x0 = [23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408];
-opts.plot=0;
+opts.plot=1;
 opts.minFunc.mode=2;
-opts.acqFunc.maxProb = 0;
+opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
 opts.trainGP.acqVal = 10;%0.055;%0.5 %1D       %%% 0.05 D=1 with EI; 0.5 D = 1
@@ -191,19 +191,19 @@ opts.rebound = 0;
 opts.trainGP.train = 1;
 opts.safeOpt = 1;
 opts.safeOpts.threshold = 50;
-opts.safeOpts.thresholdOffset = 7.5;
+opts.safeOpts.thresholdOffset = 10;
 opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
-opts.safeOpts.searchCond = 6;
-opts.newSafeOpt=1;
-opts_lBO.maxIt = 20;
+opts.safeOpts.searchCond = 4;
+opts.moSaOpt=1;
+opts_lBO.maxIt = 40;
 opts_lBO.sharedGP = true;
-opts_lBO.subspaceDim = 2;
-opts_lBO.dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
-
+opts_lBO.subspaceDim = 1;
+% opts_lBO.dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
+% opts_lBO.oracle = 'descent';
 
 globOpt = 12.1;
-data = cell(10,10);
+data = cell(10,11);
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
 for i = 1:size(X0,1)
     x0 = forwardCoordTransf(cond_t,X0(i,:));
@@ -216,6 +216,7 @@ for i = 1:size(X0,1)
     data{i,8} = X;
     data{i,9} = Y;
     data{i,10} = DIM;
+    data{i,11} = connect_PI2(xopt, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
     y = Y{length(DIM)};
     xp = 1:length(y);
     yp = zeros(length(y),1);
@@ -242,7 +243,7 @@ for i = 1:size(X0,1)
         data{i,5}=[temp2,yp(temp2)];
     end
 end
-save("data_dim2_optimize2_2.mat",'data')
+save("data_dim1_random_sim_noise.mat",'data')
 %%
 % x0 = [];
 % while size(x0,1) < 10
@@ -254,6 +255,23 @@ save("data_dim2_optimize2_2.mat",'data')
 % end
 %%
 function [y] = connect_PI(pi_params, Gg, scale,cond)
+    pi_params=backwardCoordTransf(cond,pi_params);
+    N = length(pi_params)/2;
+    C = cell(1,N);
+    len_scale = length(scale);
+    for i=1:N
+        C{i} = pid(pi_params(1,2*i-1)*scale(len_scale-mod(i,len_scale)),pi_params(1,2*i)*scale(len_scale-mod(i,len_scale)));
+        C{i}.y = sprintf('u(%d)', i);
+        C{i}.u = sprintf('e(%d)', i);
+    end
+    Gcl = connect(Gg,C{:}, 'w','z');
+    y = norm(Gcl,2)+randn(1)*2;
+    if y == inf
+        y = 1e4;
+    end
+end
+
+function [y] = connect_PI2(pi_params, Gg, scale,cond)
     pi_params=backwardCoordTransf(cond,pi_params);
     N = length(pi_params)/2;
     C = cell(1,N);
