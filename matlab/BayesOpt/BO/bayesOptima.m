@@ -230,7 +230,7 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
 %     plot(xs,mu)
     % find optimal parameters
     [~,~,mu,~]=gp(hyp,inf_, mean_, cov_, lik_, xt(algo_data.start+1:end,:), yt(algo_data.start+1:end),xt(algo_data.start+1:end,:));
-    beta = 0.8;
+    beta = 0.9;
     [yopt,I] = obj_eval((1-beta)*yt(algo_data.start+1:end)+beta*(mu));
     if yopt < algo_data.y0
         xopt = xt(algo_data.start+I,:);

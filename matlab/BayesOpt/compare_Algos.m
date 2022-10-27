@@ -178,7 +178,7 @@ X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0
 %x0 = [25,24,18,0.43,7,7.4];
 %x0 = [3.80981, 24.67182, 0.80326, 12.43287, 21.95565, 23.44122];
 x0 = [23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408];
-opts.plot=1;
+opts.plot=0;
 opts.minFunc.mode=2;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
@@ -203,9 +203,10 @@ opts_lBO.subspaceDim = 1;
 % opts_lBO.oracle = 'descent';
 
 globOpt = 12.1;
-data = cell(10,11);
+% data = cell(10,11);
+load('data_dim1_random_sim_noise.mat')
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
-for i = 1:size(X0,1)
+for i = [2,5,6,8]
     x0 = forwardCoordTransf(cond_t,X0(i,:));
     tstart = tic;
     [xopt,X,Y,DIM]=lineBO(hyp,inf_,mean_,cov_,lik_,acq, fun,cond,opts,opts_lBO,x0);
