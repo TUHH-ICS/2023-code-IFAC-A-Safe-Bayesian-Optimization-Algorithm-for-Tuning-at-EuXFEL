@@ -2,9 +2,9 @@ clear all
 set(groot,'defaultAxesTickLabelInterpreter','latex')
 set(groot, 'defaultLegendInterpreter','latex')
 set(groot, 'defaultTextInterpreter','latex')
-set(groot, 'defaultAxesFontsize',12)
-set(groot, 'defaultTextFontsize',12)
-set(groot, 'defaultLegendFontSize',12)
+set(groot, 'defaultAxesFontsize',10)
+set(groot, 'defaultTextFontsize',10)
+set(groot, 'defaultLegendFontSize',10)
 
 x = zeros(6,10);
 load("data_dim1_2.mat")
@@ -160,18 +160,24 @@ X=1:length(Y);
 [yopt,xopt]=min(Y);
 p1=plot(X,Y,'--','Color',[0 0.4470 0.7410],LineWidth=1.5)
 p11 = plot(xopt,yopt,'*','Color',[0 0.4470 0.7410],'MarkerSize',10)
+fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0 0.4470 0.7410],'FaceAlpha',2*f_alpha,'EdgeColor','none');
+
 y = data_dim1_2(:,2);
 Y=getvals(y);
 X=1:length(Y);
 p2=plot(X,Y,'-','Color',[0 0.4470 0.7410],LineWidth=1.5)
 [yopt,xopt]=min(Y);
 p21 = plot(xopt,yopt,'*','Color',[0 0.4470 0.7410],'MarkerSize',10)
+fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0 0.4470 0.7410],'FaceAlpha',2*f_alpha,'EdgeColor','none');
+
 y = data_dim1_3(:,1);
 Y=getvals(y);
 X=1:length(Y);
 p3=plot(X,Y,'--','Color',[0.8500 0.3250 0.0980],LineWidth=1.5)
 [yopt,xopt]=min(Y);
 p31 = plot(xopt,yopt,'*','Color',[0.8500 0.3250 0.0980],'MarkerSize',10)
+fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.8500 0.3250 0.0980],'FaceAlpha',2*f_alpha,'EdgeColor','none');
+
 
 y = data_dim2_1(:,1);
 Y=getvals(y);
@@ -179,6 +185,7 @@ X=1:length(Y);
 p4=plot(X,Y,'Color',[0.8500 0.3250 0.0980],LineWidth=1.5)
 [yopt,xopt]=min(Y);
 p41 = plot(xopt,yopt,'*','Color',[0.8500 0.3250 0.0980],'MarkerSize',10)
+fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.8500 0.3250 0.0980],'FaceAlpha',2*f_alpha,'EdgeColor','none');
 
 % y = data_dim2_2(:,9);
 % Y=getvals(y);
