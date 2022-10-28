@@ -206,7 +206,7 @@ globOpt = 12.1;
 % data = cell(10,11);
 load('data_dim1_random_sim_noise.mat')
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
-for i = [2,5,6,8]
+for i = [5,6]
     x0 = forwardCoordTransf(cond_t,X0(i,:));
     tstart = tic;
     [xopt,X,Y,DIM]=lineBO(hyp,inf_,mean_,cov_,lik_,acq, fun,cond,opts,opts_lBO,x0);
@@ -246,14 +246,10 @@ for i = [2,5,6,8]
 end
 save("data_dim1_random_sim_noise.mat",'data')
 %%
-% x0 = [];
-% while size(x0,1) < 10
-%     randx = rand(1,size(cond,1));
-%     temp = bsxfun(@plus,bsxfun(@times,randx,(cond(:,2)'-cond(:,1)')),cond(:,1)');
-%     if fun(temp) <= 40
-%         x0(end+1,:) = temp;
-%     end
-% end
+c=[];
+for i = 1:10
+    c(end+1)=connect_PI2(data{i,7}, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t)
+end
 %%
 function [y] = connect_PI(pi_params, Gg, scale,cond)
     pi_params=backwardCoordTransf(cond,pi_params);

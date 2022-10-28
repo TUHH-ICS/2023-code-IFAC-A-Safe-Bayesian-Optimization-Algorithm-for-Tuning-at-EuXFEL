@@ -125,7 +125,7 @@ X0=[-0.915000000000000,-0.714367350826230,1,0.825396825396825;
 
 data = load(dir_+'data.mat');
 data=data.data;
-for i = 1:size(X0,1)
+for i = 4
     x0 = X0(i,:);
     [xopt,X,Y,DIM]=lineBO(hyp,inf_,mean_,cov_,lik_,acq, fun,cond,opts,opts_lBO,x0);
     data{i,1}=X;
