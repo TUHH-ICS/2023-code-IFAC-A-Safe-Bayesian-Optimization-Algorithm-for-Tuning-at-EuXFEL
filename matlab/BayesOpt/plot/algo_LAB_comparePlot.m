@@ -8,7 +8,7 @@ set(groot, 'defaultLegendFontSize',12)
 
 x=[];
 % load('Lab_MO_Origami_dim1_random.mat')
-load('LineBO_descent_Lab_1sec/data.mat')
+load('LineBO_Lab_1sec/data.mat')
 data_dim1_1 = data(:,2);
 par_dim = data(:,1);
 %unlocks(1) = sum(cell2mat(data(:,end)));
@@ -24,7 +24,7 @@ for i = 1:size(data_dim1_1,1)
 end
 
 % load('Lab_MO_Origami_dim1_descent.mat')
-load('LineBO_descent_Lab_1sec2/data.mat')
+load('LineBO_descent_Lab_1sec/data.mat')
 data_dim1_2 = data(:,2);
 par_dim = data(:,1);
 %unlocks(end+1) = sum(cell2mat(data(:,end)));
@@ -39,7 +39,7 @@ for i = 1:size(data_dim1_2,1)
     x(end+1,:) = par_temp(I,:);
 end
 % load('Lab_MO_Origami_dim2_random.mat')
-load('Nelder_Mead_Lab/data.mat')
+load('Nelder_Mead_Lab_1sec/data.mat')
 data_dim2_1 = data(1:end,1);
 
 x=[];
@@ -224,10 +224,10 @@ h3.Box = 'on';
 %%
 y=[];
 f_alpha = 0.2;
-conv = 0.01;
+conv = 0.1;
 fig = figure(1);
 fig.Units='centimeters';
-fig.Position(3:end)= [8.4,6];
+fig.Position(3:end)= [8.4,4];
 %fig.Position = [0,0, 1000,500];
 hold on
 % y = data_dim1_1;
@@ -249,6 +249,27 @@ hold on
 % [Y,std_d]=getvals(y);
 % X=1:length(Y);
 % p3=plot(X,Y,'g-',X,Y-std_d,'g--',X,Y+std_d,'g--')
+
+y = data_dim2_1;
+Y=getvals(y);
+Yu=max(Y,[],1);
+Yl=min(Y,[],1);
+std_Y = std(Y,1,1);
+Y=mean(Y,1);
+X=1:length(Y);
+p3=plot(X,Y,'Color','k','LineWidth',1.5);
+yopt=min(Y);
+xopt=find(Y<=yopt+conv);
+xopt=xopt(1);
+yopt=Y(xopt);
+p31 = plot(xopt,yopt,'*','Color','k'	,'MarkerSize',10);
+st=15;
+t=linspace(st,floor((length(Y)-st)/6)*6+st,7);
+t=t-5;
+p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],'k','EdgeColor','none');
+% p32 = errorbar(X(t),Y(t),Yl(t)-Y(t),Yu(t)-Y(t),'v','Color','k');% p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],'k','EdgeColor','none');
+p32.FaceAlpha = 1*f_alpha;
+
 y = data_dim1_1;
 Y=getvals(y);
 Yu=max(Y,[],1);
@@ -256,9 +277,10 @@ Yl=min(Y,[],1);
 std_Y = std(Y,1,1);
 Y=mean(Y,1);
 X=1:length(Y);
-[yopt,xopt]=min(Y(abs(diff(Y))>conv));
-xopt=find(Y==yopt);
+yopt=min(Y);
+xopt=find(Y<=yopt+conv);
 xopt=xopt(1);
+yopt=Y(xopt);
 p1=plot(X,Y,'Color',[0 0.4470 0.7410],'LineWidth',1.5);
 p11 = plot(xopt,yopt,'*','Color',[0 0.4470 0.7410]	,'MarkerSize',10);
 st=20;
@@ -275,34 +297,16 @@ std_Y = std(Y,1,1);
 Y=mean(Y,1);
 X=1:length(Y);
 p2=plot(X,Y,'Color',[0.8500 0.3250 0.0980],'LineWidth',1.5);
-[yopt,xopt]=min(Y(abs(diff(Y))>conv));
-xopt=find(Y==yopt);
+yopt=min(Y);
+xopt=find(Y<=yopt+conv);
 xopt=xopt(1);
+yopt=Y(xopt);
 st=10;
 t=t-5;
 p21 = plot(xopt,yopt,'*','Color',[0.8500 0.3250 0.0980]	,'MarkerSize',10);
 % p22 = errorbar(X(t),Y(t),Yl(t)-Y(t),Yu(t)-Y(t),'v','Color',[0.8500 0.3250 0.0980]	);
 p22 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.8500 0.3250 0.0980],'EdgeColor','none');
 p22.FaceAlpha = 2*f_alpha;
-
-y = data_dim2_1;
-Y=getvals(y);
-Yu=max(Y,[],1);
-Yl=min(Y,[],1);
-std_Y = std(Y,1,1);
-Y=mean(Y,1);
-X=1:length(Y);
-p3=plot(X,Y,'Color','k','LineWidth',1.5);
-[yopt,xopt]=min(Y(abs(diff(Y))>conv));
-xopt=find(Y==yopt);
-xopt=xopt(1);
-p31 = plot(xopt,yopt,'*','Color','k'	,'MarkerSize',10);
-st=15;
-t=linspace(st,floor((length(Y)-st)/6)*6+st,7);
-t=t-5;
-% p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],'k','EdgeColor','none');
-% p32 = errorbar(X(t),Y(t),Yl(t)-Y(t),Yu(t)-Y(t),'v','Color','k');% p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],'k','EdgeColor','none');
-% p32.FaceAlpha = 1*f_alpha;
 
 % y = data_dim2_2;
 % Y=getvals(y);
@@ -370,13 +374,14 @@ t=t-5;
 hold off
 %legend("D = 1; safe","D = 1; naive", "D = 1; safe \& optimized","D = 2; safe","D = 2; naive", "D = 2; safe \& optimized",'interpreter','latex','NumColumns',2)
 set(gca,'TickLabelInterpreter','latex');
-legend([p1,p2,p3],"LineBO Random","LineBO Descent","Nelder-Mead",'interpreter','latex','NumColumns',1,'Location','best')
+legend([p1,p2,p3],"LineBO Random","LineBO Descent","Nelder-Mead",'interpreter','latex','NumColumns',1,'Location','Northeast')
 xlabel("iteration $n$","Interpreter","latex")
 ylabel("$$J_{opt}(n)$$ [fs]",'Interpreter','latex')
 ax = gca;
 ax.Box = 'on';
 grid on
 xlim([0,150])
+
 
 
 function [Y,std_d] = getvals(y)
