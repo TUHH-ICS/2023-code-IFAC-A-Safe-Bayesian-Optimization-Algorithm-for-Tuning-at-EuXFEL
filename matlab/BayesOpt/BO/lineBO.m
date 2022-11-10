@@ -89,7 +89,7 @@ function [xopt, X, Y, DIM] = lineBO(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,c
         algoStruct.post.xopt = xopt;
         DIM(i,1:opts_lineBO.subspaceDim) = l;
         fprintf("Dim: %d\n",algoStruct.subspace)
-        pause(1)
+        %pause(1)
         [xopt,yt_new, xt, yt] = bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,cond,opts_BO,xopt,algoStruct);
 %         yt_new = obj_eval(yt);
         %func = @(x) normcdf(x,yt_new,std_).*normpdf(x,yt_old,std_);

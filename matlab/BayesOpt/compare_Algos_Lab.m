@@ -97,7 +97,7 @@ save(dir_+'jitter_data.mat','jitter_data');
 
 stepsize = 0.2 * (cond_t(:,2)-cond_t(:,1));
 % stepsize(stepsize > 1) = 1;
-fun = @(params) LAB_readWrite(params, addresses, 10, 10.5, lock_status, jitter_addr,stepsize,1,kphi,cond_t,dir_, meas_mean);
+fun = @(params) meas(params);%LAB_readWrite(params, addresses, 10, 10.5, lock_status, jitter_addr,stepsize,1,kphi,cond_t,dir_, meas_mean);
 
 X0=[-0.915000000000000,-0.714367350826230,1,0.825396825396825;
     -0.732137498024058,-0.938220902510097,0.178283412139096,-0.397387870827216;
@@ -150,129 +150,7 @@ end
 %save("Lab_data_dim1_random.mat",'data')
 
 %%
-fun = @(params) LAB_readWrite(params, addresses, 10, 10.5, lock_status, jitter_addr,stepsize,1,kphi,cond_t,dir_, meas_mean);
-for i = 1:10
-    x=data{i,4};
-    data{i,7}=fun(x);
+function y = meas(params)
+    pause(1);
+    y=1;
 end
-
-%%
-X0 = zeros(9,4);
-for i = 1:9
-    val = 30;
-    param = zeros(1,4);
-    while (val > 20 || val < 7)
-        param = -1+2*rand(1,4)
-        val = fun(param);
-    end
-    X0(i,:) = param;
-end
-X0=[-0.732137498024058,-0.938220902510097,0.878283412139096,-0.397387870827216;
-    0.325616123921949,-0.338342009593391,0.796972275668599,-0.763689603106579;
-    0.824264948479246,-0.791976850441243,0.491092147403435,0.472534911193277;
-    -0.731754134342635,-0.574796933282314,0.789883350881629,-0.857094374425911;
-    -0.0878846663125170,-0.796661212750490,0.990779455310183,-0.335814333095002;
-    -0.405306368224157,-0.875909557360735,-0.403512056224472,-0.907297470203639];
-
-% x0 = [];
-% while size(x0,1) < 4
-%     randx = rand(1,size(cond,1));
-%     temp = bsxfun(@plus,bsxfun(@times,randx,(cond(:,2)'-cond(:,1)')),cond(:,1)');
-%     if fun(temp) <= 40
-%         x0(end+1,:) = temp;
-%     end
-% end
-%%
-%fun(x(I(1),:))
-fun(X0(end,:))
-%fun([-2.26859, -0.00157, 0.01212, 0.00213, -0.10082, -0.00000])
-%xopt = [-4.00000, -0.00094, 0.20000, 0.00200, -0.06879, -0.00001];
-%setParams(xopt,addresses,5,11)
-
-% function varargout= setParams(params,addr,duration,freq, lock_addr, jitter_addr,stepsize,t)
-%     D = length(params);
-%     params_old = zeros(1,D);
-%     for i = 1:D
-%         data_str = doocsread(addr{i});
-%         params_old(i)=round(data_str.data,6);
-%     end
-%     counter=1:D;
-%     counter=counter(abs(params_old-params) > 10e-6);
-%     %disp(counter)
-%     for i=counter
-%        writeData(addr{i},params(i),params_old(i),stepsize,t)
-%     end
-%     pause(0.2)
-%     %pause(2)
-%     [data,jitters] = readData(addr{end},duration,freq,lock_addr,jitter_addr);
-%     varargout{1} = data;
-%     if nargout == 2
-%        varargout{2} = jitters;
-%     end
-% end
-% 
-% function writeData(addr,param,param_old,stepsize,t)
-%     num_step=fix((param-param_old)/stepsize);
-%     for i = 1:abs(num_step)
-%         if num_step > 0
-%             m=doocswrite(addr,param_old+i*stepsize);
-%         else
-%             m=doocswrite(addr,param_old-i*stepsize);
-%         end
-%         pause(t)
-%     end
-%     m=doocswrite(addr,param);
-% end
-% 
-% function [data,jitters]=readData(addr,duration,freq,lock_addr,jitter_addr)
-%     times = 1/freq;
-%     time = duration;
-%     iter = ceil(time/times);
-%     jitter = zeros(iter,1);
-%     jitters = zeros(iter,length(jitter_addr));
-%         for i = 1:iter
-%              if ~checkLockStatus(lock_addr)
-%                  st=tic;
-%                 while ~checkLockStatus(lock_addr)
-%                     pause(3)
-%                     if toc(st) > 31
-%                         s = input("Can't lock system, set value manually by writing 'user' or continue by pressing 'enter': ",'s');
-%                         if strcmp(s,'user')
-%                             data = input("Set value: ");
-%                             jitters=100*ones(1,length(jitter_addr)+1);
-%                         else
-%                             st = tic;
-%                             continue;
-%                         end
-%                         return
-%                     end
-%                 end
-%             end
-%            data_str = doocsread(addr);
-%            jitter(i) = data_str.data*10e3;
-%            for l = 1:length(jitter_addr)
-%                temp_str = doocsread(jitter_addr{l});
-%                jitters(i,l) = temp_str.data;
-%            end
-%            pause(times)
-%         end
-%     data = mean(jitter);
-%     std_dev = std(jitter);
-%     jitters = [mean(jitters,1),std_dev];
-%     disp(data)
-%     disp(jitters)
-%     disp(std_dev)
-% end
-% 
-% function b=checkLockStatus(lock_addr)
-%     c = 0;
-%     for i =1:length(lock_addr)
-%         c_str = doocsread(lock_addr{i});
-%         c = c + c_str.data;
-%     end
-%     if c == 0
-%         b = true;
-%     else
-%         b = false;
-%     end
-% end  
