@@ -65,15 +65,15 @@ opts.maxProb = 0;
 opts.acqFunc.xi = 0.0;
 opts.acqFunc.beta = 2;
 opts.trainGP.acqVal = 10;%0.055;%0.5 %1D       %%% 0.05 D=1 with EI; 0.5 D = 1
-opts.termCondAcq = -0.5;%0.05;%0.25;%0.5 %1D    %%% 0.05 D=1 with EI; 0.25 or 0.5 D=1; 0.2 D=2 with EI sf = 5
-opts.maxIt = 80;
+opts.termCondAcq = 0.5;%0.05;%0.25;%0.5 %1D    %%% 0.05 D=1 with EI; 0.25 or 0.5 D=1; 0.2 D=2 with EI sf = 5
+opts.maxIt = 35;
 opts.trainGP.It = 10000;
-opts.trainGP.train = 0;
+opts.trainGP.train = 1;
 opts.safeOpt = 1;
 opts.moSaOpt = 1;
 opts.safeOpts.threshold = 25;
 opts.safeOpts.thresholdOffset = 5;
-opts.safeOpts.searchCond = -0.5;
+opts.safeOpts.searchCond = 2;
 opts.safeOpts.thresholdPer = 0.1;
 opts.safeOpts.thresholdOrder = 1;
 opts_lBO.maxIt = 50;
