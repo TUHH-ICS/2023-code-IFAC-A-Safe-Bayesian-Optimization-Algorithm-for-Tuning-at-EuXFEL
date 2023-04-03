@@ -171,7 +171,7 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
 
         if checkGP_train && gp_cd == 0
             disp(newline+"cov hyp: "+num2str(hyp.cov')+"    lik hyp: "+num2str(hyp.lik))
-            hyp=gpTrain(hyp_old,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),opts);
+            [hyp,~,~]=gpTrain(hyp,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),opts,algo_data);
             gp_cd = coolDown;
             disp(newline+"cov hyp: "+num2str(hyp.cov')+"    lik hyp: "+num2str(hyp.lik))
 %             try
@@ -210,7 +210,7 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
 
         stop=toc(start);
         disp("time per interation: "+num2str(stop))
-        if isfield(opts,'dir_timeData')
+        if isfield(opts,'dir_timeData') && ~isempty(opts.dir_timeData)
             time_str = load(opts.dir_timeData+'/time_data.mat',"time");
             time = time_str.time;
             time(end+1)=stop+time(end);

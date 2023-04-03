@@ -12,7 +12,7 @@ data2="LineBO_descent_Lab_1sec/data";
 
 data3="Nelder_Mead_Lab_1sec/data";
 
-data4 = "LineBO_Lab2/data";
+data4 = "LineBO_Lab/data";
 
 data5="LineBO_descent_Lab/data";
 
@@ -142,7 +142,7 @@ end
 f_alpha = 0.2;
 fig1=figure(1);
 fig1.Units = 'centimeters';
-fig1.Position(3:4)=[6,5];
+fig1.Position(3:4)=[8.5,4];
 ax=gca;
 ax.Box='on';
 ax.FontSize=10;
@@ -152,15 +152,15 @@ y = data_dim1_1;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
 [yopt,xopt]=min(Y);
-p1=plot(X,Y,'-','Color',[0 0.4470 0.7410],LineWidth=1.2);
+p1=plot(X,Y,'-','Color',[0 0.4470 0.7410],LineWidth=1.5);
 p11 = plot(xopt,yopt,'*','Color',[0 0.4470 0.7410],'MarkerSize',10);
 p12=fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0 0.4470 0.7410],'FaceAlpha',2*f_alpha,'EdgeColor','none');
 
 
-y = data_dim1_2(:,1);
+y = data_dim1_2;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
-p2=plot(X,Y,'-','Color',[0.8500 0.3250 0.0980],LineWidth=1.2);
+p2=plot(X,Y,'-','Color',[0.8500 0.3250 0.0980],LineWidth=1.5);
 [yopt,xopt]=min(Y);
 p21 = plot(xopt,yopt,'*','Color',[0.8500 0.3250 0.0980],'MarkerSize',10);
 p22 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.8500 0.3250 0.0980],'EdgeColor','none');
@@ -169,22 +169,22 @@ p22.FaceAlpha = 2*f_alpha;
 y = data_dim1_3;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
-p3=plot(X,Y,'-','Color','k'	,LineWidth=1.2);
+p3=plot(X,Y,'-','Color','k'	,LineWidth=1.5);
 [yopt,xopt]=min(Y);
 p31 = plot(xopt,yopt,'*','Color','k'	,'MarkerSize',10);
-% p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.9290 0.6940 0.1250],'EdgeColor','none');
-% p32.FaceAlpha = 2*f_alpha;
+p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0 0 0],'EdgeColor','none');
+p32.FaceAlpha = f_alpha;
 grid on
 xlim([0 130])
 ax = gca;
 set(gca,'TickLabelInterpreter','latex');
-xlabel("iteration $n$","Interpreter","latex")
+xlabel("Iteration $n$","Interpreter","latex")
 ylabel("$$J_{opt}(n)$$ [fs]",'Interpreter','latex')
 
 
 fig=figure(2);
 fig.Units = 'centimeters';
-fig.Position(3:4)=[6,5];
+fig.Position(3:4)=[8.5,4];
 ax=gca;
 ax.Box='on';
 ax.FontSize=10;
@@ -193,23 +193,23 @@ hold on
 y = data_dim2_1;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
-p4=plot(X,Y,'--','Color',[0 0.4470 0.7410]	,LineWidth=1.2);
+p4=plot(X,Y,'-','Color',[0 0.4470 0.7410]	,LineWidth=1.5);
 [yopt,xopt]=min(Y);
 p41 = plot(xopt,yopt,'*','Color',[0 0.4470 0.7410]	,'MarkerSize',10);
 p42 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0 0.4470 0.7410],'EdgeColor','none');
 p42.FaceAlpha = 2*f_alpha;
 
-y = data_dim2_2(:,1);
+y = data_dim2_2;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
-p5=plot(X,Y,'--','Color',[0.8500 0.3250 0.0980]	,LineWidth=1.2);
+p5=plot(X,Y,'-','Color',[0.8500 0.3250 0.0980]	,LineWidth=1.5);
 [yopt,xopt]=min(Y);
 p51 = plot(xopt,yopt,'*','Color',[0.8500 0.3250 0.0980]	,'MarkerSize',10);
 p52=fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.8500 0.3250 0.0980],'FaceAlpha',2*f_alpha,'EdgeColor','none');
 y = data_dim2_3;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
-p6=plot(X,Y,'--','Color','k'	,LineWidth=1.2);
+p6=plot(X,Y,'-','Color','k'	,LineWidth=1.5);
 [yopt,xopt]=min(Y);
 p61 = plot(xopt,yopt,'*','Color','k'	,'MarkerSize',10);
 p62 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],'k','EdgeColor','none');
@@ -220,12 +220,14 @@ grid on
 xlim([0 130])
 % 
 if Lab
-    legend([p1,p2,p3],'LineBO random','LineBO descent', 'Nelder-Mead','Interpreter','latex','NumColumns',1,'Location','Northeast','fontsize',8)
-    legend([p4,p5,p6],'LineBO random','LineBO descent', 'Nelder-Mead','Interpreter','latex','NumColumns',1,'Location','Northeast','fontsize',8)
+    l1=legend([p1,p2,p3],'\texttt{LineBO} random','\texttt{LineBO} descent', 'Nelder-Mead','Interpreter','latex','NumColumns',2,'Location','Northeast','fontsize',8)
+    l2=legend([p4,p5,p6],'\texttt{LineBO} random','\texttt{LineBO} descent', 'Nelder-Mead','Interpreter','latex','NumColumns',2,'Location','Northeast','fontsize',8)
     ax = gca;
     set(gca,'TickLabelInterpreter','latex');
-    xlabel("iteration $n$","Interpreter","latex")
+    xlabel("Iteration $n$","Interpreter","latex")
     ylabel("$$J_{opt}(n)$$ [fs]",'Interpreter','latex')
+    l1.Position(1)=l1.Position(1)+0.02;
+    l2.Position(1)=l2.Position(1)+0.02;
 %     ax.Box='on';
 else
     ylim([10,30])
