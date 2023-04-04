@@ -2,9 +2,9 @@ clear all
 set(groot,'defaultAxesTickLabelInterpreter','latex')
 set(groot, 'defaultLegendInterpreter','latex')
 set(groot, 'defaultTextInterpreter','latex')
-set(groot, 'defaultAxesFontsize',10)
-set(groot, 'defaultTextFontsize',10)
-set(groot, 'defaultLegendFontSize',10)
+set(groot, 'defaultAxesFontsize',8)
+set(groot, 'defaultTextFontsize',8)
+set(groot, 'defaultLegendFontSize',8)
 
 data1 = "LineBO_Lab_1sec/data";
 
