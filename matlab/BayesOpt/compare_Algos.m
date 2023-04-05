@@ -97,37 +97,19 @@ Ki_min = 0;
 
 cond_t=[Kp_min, Kp_max;
       Ki_min, Ki_max;
-      %1.2, 3.8;
       0, 0.000105*350;
       0, 3;
       Kp_min, Kp_max;
       Ki_min, Ki_max;
-      %1.2, 3.8;
       0, 0.000105*350;
       0, 3;
       Kp_min, Kp_max;
       Ki_min, Ki_max];
 cond = repmat([-1,1],size(cond_t,1),1);
 
-% cond=[Kp_min, Kp_max;
-%       Ki_min, Ki_max;
-%       Kp_min, Kp_max;
-%       Ki_min, Ki_max];
-
-% cond=[Kp_min, Kp_max;
-%       Ki_min, Ki_max;
-%       Kp_min, Kp_max;
-%       Ki_min, Ki_max;
-%       Kp_min, Kp_max;
-%       Ki_min, Ki_max];
-
-% cond=[Kp_min, Kp_max;
-%       Ki_min, Ki_max
-%       ];
 
 if N_L == 0
     scale = [1/5; 1/2];
-%scale = [1/5;1/5];
     scale = repmat(scale,[N+N_L,1]);
 else
     scale =[];
@@ -153,17 +135,6 @@ hyp.mean = 40;
 hyp.cov = log([(cond(:,2)-cond(:,1)).*scale;15]);
 acq = {@EI};
 
-% X0 = [5.4411   43.3055    1.9576    9.1633   10.3655   36.4434    1.5068   44.3056    7.4369   55.0455
-%     8.2180   45.9300    1.5019   17.2499    2.9152   34.5726    2.2934   32.7956   12.8867   38.6666
-%    19.4990   40.7410    2.2173   56.7104    6.4263   42.5569    1.5780    7.1638   18.2977   27.0083
-%    13.8700   39.7167    2.4325   21.0131   19.9279   24.9695    2.5471   49.9750    7.8419   36.8076
-%    17.5510   32.4444    2.5919   15.8867    9.6786    7.1529    2.7037   38.7331   14.4880   38.3590
-%    16.4325   38.8387    2.0702   43.2628   15.7704   59.6223    1.5499    6.3479    3.4690    3.8155
-%    12.2565   26.9024    1.7853   45.8103   18.9113   46.3188    2.6926   58.3645    5.9224    8.3325
-%    10.5618    8.9998    2.1377   15.7287    1.5247   45.2960    1.5885   26.5441   20.6963   21.5537
-%    22.1429   23.6824    2.2935   42.2428   13.3807    1.1747    1.7294   25.4586    8.2541   11.8232
-%    15.5298   53.0569    2.1408    9.2851    6.1559   24.4173    2.3979   49.5350   23.7409   19.1115];
-
 X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0587   10.0596   25.4586
    11.4464   12.9611    0.0290    2.8479    9.9614   40.2759    0.0161    2.5005   23.1119   10.0352
    23.7409   19.1115    0.0196    0.2699    3.5288    8.1776    0.0249    1.4855    5.8534   29.7003
@@ -175,16 +146,14 @@ X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0
     0.9518   50.5324    0.0205    2.5623   10.5668   26.7616    0.0020    0.5313   19.9517   19.8497
    24.5825    6.0133    0.0065    1.0789    1.8898   31.3131    0.0123    0.5270    6.4266   54.3092];
 
-%x0 = [25,24,18,0.43,7,7.4];
-%x0 = [3.80981, 24.67182, 0.80326, 12.43287, 21.95565, 23.44122];
 x0 = [23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408];
 opts.plot=0;
 opts.minFunc.mode=2;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
-opts.trainGP.acqVal = 10;%0.055;%0.5 %1D       %%% 0.05 D=1 with EI; 0.5 D = 1
-opts.termCondAcq = 0.05;%0.05;%0.25;%0.5 %1D    %%% 0.05 D=1 with EI; 0.25 or 0.5 D=1; 0.2 D=2 with EI sf = 5
+opts.trainGP.acqVal = 10;
+opts.termCondAcq = 0.1;
 opts.maxIt = 500;
 opts.trainGP.It = 501;
 opts.trainGP.train = 1;
@@ -195,7 +164,8 @@ opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
 opts.safeOpts.searchCond = 4;
 opts.moSaOpt=1;
-opts.rndmInt.mean = [0,50];
+opts.minFunc.rndmInt.mean = [0,50];
+opts.minFunc.repeat = 5;
 opts_lBO.maxIt = 40;
 opts_lBO.sharedGP = true;
 opts_lBO.subspaceDim = 1;
@@ -203,8 +173,7 @@ opts_lBO.subspaceDim = 1;
 % opts_lBO.oracle = 'descent';
 
 globOpt = 11.8;
-% data = cell(10,11);
-% load('data_dim1_random_sim_noise.mat')
+data = cell(10,11);
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
 for i = 1:10
     x0 = forwardCoordTransf(cond_t,X0(i,:));
@@ -244,12 +213,7 @@ for i = 1:10
         data{i,5}=[temp2,yp(temp2)];
     end
 end
-save("data_mos",'data')
-%%
-c=[];
-for i = 1:10
-    c(end+1)=connect_PI2(data{i,7}, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t)
-end
+save("data_mos",'data')  % define file name and path
 %%
 function [y] = connect_PI(pi_params, Gg, scale,cond)
     pi_params=backwardCoordTransf(cond,pi_params);
@@ -262,24 +226,7 @@ function [y] = connect_PI(pi_params, Gg, scale,cond)
         C{i}.u = sprintf('e(%d)', i);
     end
     Gcl = connect(Gg,C{:}, 'w','z');
-    y = norm(Gcl,2)+randn(1)*2;
-    if y == inf
-        y = 1e4;
-    end
-end
-
-function [y] = connect_PI2(pi_params, Gg, scale,cond)
-    pi_params=backwardCoordTransf(cond,pi_params);
-    N = length(pi_params)/2;
-    C = cell(1,N);
-    len_scale = length(scale);
-    for i=1:N
-        C{i} = pid(pi_params(1,2*i-1)*scale(len_scale-mod(i,len_scale)),pi_params(1,2*i)*scale(len_scale-mod(i,len_scale)));
-        C{i}.y = sprintf('u(%d)', i);
-        C{i}.u = sprintf('e(%d)', i);
-    end
-    Gcl = connect(Gg,C{:}, 'w','z');
-    y = norm(Gcl,2);
+    y = norm(Gcl,2)+randn(1)*0.1;           % add small noise term to preserve positive definiteness 
     if y == inf
         y = 1e4;
     end
