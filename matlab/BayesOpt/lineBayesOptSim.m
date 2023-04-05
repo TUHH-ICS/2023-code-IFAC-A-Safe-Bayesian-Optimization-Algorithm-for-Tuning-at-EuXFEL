@@ -160,7 +160,7 @@ acq = {@EI};
 %x0 = [23.71978, 13.51946, 1.79723, 24.50445, 9.57467, 26.47217, 2.45624, 8.95156, 3.19737, 12.91408];
 x0 = forwardTransform(cond_r,[23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408]);
 opts.plot=1;
-opts.minFunc.mode=2;
+opts.minFunc.mode=4;
 opts.acqFunc.xi = 0.0;
 opts.acqFunc.beta = 2;
 
@@ -183,12 +183,12 @@ opts_lBO.sharedGP = 1;
 opts_lBO.subspaceDim = 1;
 %opts_lBO.obj_eval = @(y1,y2) y1 > y2+0.1;
 %opts_lBO.dim_combinations = 5;
-opts.dir_timeData="/home/jannis/thesis_data/master_thesis/matlab/Temp";
+%opts.dir_timeData="";
 %opts_lBO.dim_combinations = [2;6];
 % opts_lBO.oracle = 'descent';
 
 time = 0;
-save(opts.dir_timeData+"/time_data","time");
+%save(opts.dir_timeData+"/time_data","time");
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_r);
 tic
 [xopt,X,Y,DIM]=lineBO(hyp,inf_,mean_,cov_,lik_,acq, fun,cond,opts,opts_lBO,x0);

@@ -1,31 +1,86 @@
-function [hyp_new]=gpTrain(hyp, inf_, mean_, cov_, lik_, x, y, opts, varargin)
+function [hyp_new,nlZ,dnlZ]=gpTrain(hyp, inf_, mean_, cov_, lik_, x, y, opts, varargin)
     if opts.safeOpt || opts.moSaOpt
         safeOpts = opts.safeOpts;
         I = y > safeOpts.threshold;
         y(I) = safeOpts.threshold;
     end
+
     oldOpts.mode = 2;
-    if isfield(opts,'minFunc'), opts = opts.minFunc; else, opts = []; end
-    opts=getopts(oldOpts,opts);
+    oldOpts.repeat = 1;
+    oldOpts.rndmInt.mean = repmat([-20,50],size(hyp.mean,1),1);
+    oldOpts.rndmInt.cov = repmat([1e-3,5],size(hyp.cov,1),1);
+    oldOpts.rndmInt.lik = repmat([1e-3,1],size(hyp.lik,1),1);
+
+    if isfield(opts,'minFunc'), opts = getopts(oldOpts,opts.minFunc); else, opts = oldOpts; end
     mode = opts.mode;
-    if mode == 1
-        oldOpts.showIts = 1;
-        opts = getopts(oldOpts,opts);
-        if isempty(varargin)
-            hyp_new = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y);
-        else
-            hyp_new = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y, varargin{:});
+    nlZ_v = zeros(opts.repeat,1);
+    dnlZ_v = zeros(opts.repeat,1);
+    hyp_new = cell(opts.repeat,1);
+    if mode < 4
+        for i = 1:opts.repeat
+            switch mode
+                case 1
+                    oldOpts.showIts = 1;
+                    opts = getopts(oldOpts,opts);
+                    if isempty(varargin)
+                        [hyp_new{i}, nlZ_v(i), dnlZ_v(i)] = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y);
+                    else
+                        [hyp_new{i}, nlZ_v(i), dnlZ_v(i)] = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y, varargin{:});
+                    end
+                case 2
+                    oldOpts.MaxFunEvals = 200;
+                    oldOpts.Method = 'qnewton';
+                    oldOpts.progTol = eps;
+                    oldOpts.optTol = eps;
+                    opts = getopts(oldOpts,opts);
+                    [hyp_new{i}, nlZ_v(i), dnlZ_v(i)]=minimize_minfunc(hyp, @gp, opts, inf_, mean_, cov_, lik_, x, y);
+                case 3
+                    oldOpts.MaxFunEvals = -200;
+                    opts = getopts(oldOpts,opts);
+                    [hyp_new{i}, funval]=minimize(hyp, @gp, -opts.MaxFunEvals, inf_, mean_, cov_, lik_, x, y);
+                    nlZ_v(i)=min(funval);
+            end
+            hyp = rand_hyp(opts.rndmInt);
         end
-    elseif mode == 2
-        oldOpts.MaxFunEvals = 150;
-        oldOpts.Method = 'qnewton';
-        oldOpts.progTol = eps;
-        oldOpts.optTol = eps;
-        opts = getopts(oldOpts,opts);
-        [hyp_new,~,~]=minimize_minfunc(hyp, @gp, opts, inf_, mean_, cov_, lik_, x, y);
     else
-        oldOpts.length = -150;
+        if ~isempty(varargin), algo_data = varargin{1}; end
+        l= algo_data.l;
+        direct.showits = 1;
+        direct.maxevals = 1000;
+        direct.maxits = 500;
+        direct.maxdeep = 500;
+        oldOpts.direct = direct;
         opts = getopts(oldOpts,opts);
-        [hyp_new,~,~]=minimize(hyp, @gp, opts.length, inf_, mean_, cov_, lik_, x, y);
+        cond = cat(1,opts.rndmInt.mean,opts.rndmInt.lik,opts.rndmInt.cov([1;l],:));
+        Problem.f=@(hyp_) DirectGP(hyp_, inf_, mean_, cov_, lik_, x, y, l,hyp);
+        [~, hyp_] = Direct(Problem,cond,opts.direct);
+        hyp_new=[];
+        hyp_new.mean = hyp_(1);
+        hyp_new.lik = log(hyp_(2));
+        hyp_new.cov = hyp.cov;
+        hyp_new.cov([end;l])=log(hyp_(3:end));
+        [nlZ,dnlZ] = gp(hyp_new, inf_, mean_, cov_, lik_, x, y);
+        return
     end
+    [~,id] = min(nlZ_v);
+    nlZ = nlZ_v(id);
+    dnlZ = dnlZ_v(id);
+    hyp_new = hyp_new{id};
+    if nargout > 3
+        i = id;
+    end
+end
+
+function [hyp] = rand_hyp(rndmInt)
+    hyp.cov = rndmInt.cov(:,1)+(rndmInt.cov(:,2)-rndmInt.cov(:,1)).*rand(size(rndmInt.cov,1),1);
+    hyp.mean = rndmInt.mean(:,1)+(rndmInt.mean(:,2)-rndmInt.mean(:,1)).*rand(size(rndmInt.mean,1),1);
+    hyp.lik = log(rndmInt.lik(:,1)+(rndmInt.lik(:,2)-rndmInt.lik(:,1)).*rand(size(rndmInt.lik,1),1));
+end
+
+function [nLz] = DirectGP(hyp__, inf_, mean_, cov_, lik_, x, y,l,hyp_)
+    hyp.mean = hyp__(1);
+    hyp.lik = log(hyp__(2));
+    hyp.cov = hyp_.cov;
+    hyp.cov([end;l]) = log(hyp__([3:end]));
+    [nLz]=gp(hyp, inf_, mean_, cov_, lik_, x, y);
 end

@@ -187,7 +187,6 @@ opts.trainGP.acqVal = 10;%0.055;%0.5 %1D       %%% 0.05 D=1 with EI; 0.5 D = 1
 opts.termCondAcq = 0.05;%0.05;%0.25;%0.5 %1D    %%% 0.05 D=1 with EI; 0.25 or 0.5 D=1; 0.2 D=2 with EI sf = 5
 opts.maxIt = 500;
 opts.trainGP.It = 501;
-opts.rebound = 0;
 opts.trainGP.train = 1;
 opts.safeOpt = 1;
 opts.safeOpts.threshold = 50;
@@ -196,17 +195,18 @@ opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
 opts.safeOpts.searchCond = 4;
 opts.moSaOpt=1;
+opts.rndmInt.mean = [0,50];
 opts_lBO.maxIt = 40;
 opts_lBO.sharedGP = true;
 opts_lBO.subspaceDim = 1;
 % opts_lBO.dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
 % opts_lBO.oracle = 'descent';
 
-globOpt = 12.1;
+globOpt = 11.8;
 % data = cell(10,11);
-load('data_dim1_random_sim_noise.mat')
+% load('data_dim1_random_sim_noise.mat')
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
-for i = [5,6]
+for i = 1:10
     x0 = forwardCoordTransf(cond_t,X0(i,:));
     tstart = tic;
     [xopt,X,Y,DIM]=lineBO(hyp,inf_,mean_,cov_,lik_,acq, fun,cond,opts,opts_lBO,x0);
@@ -244,7 +244,7 @@ for i = [5,6]
         data{i,5}=[temp2,yp(temp2)];
     end
 end
-save("data_dim1_random_sim_noise.mat",'data')
+save("data_mos",'data')
 %%
 c=[];
 for i = 1:10

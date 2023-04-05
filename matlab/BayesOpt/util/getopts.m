@@ -1,4 +1,5 @@
 function opts=getopts(opts,newOpts)
+    if isempty(newOpts), return; end
     ch1=fieldnames(newOpts);
     ch2=fieldnames(opts);
     for i=1:length(ch1)
