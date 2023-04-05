@@ -1,6 +1,24 @@
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Implements the safe options with constant beta of
+% Berkenkamp,  F.,  Schoellig,  A.P.,  and  Krause,  A.  (2016).
+% Safe controller optimization for quadrotors with Gaus-sian  processes.
+%--------------------------------------------------------------------------------------------
+% SafeOpt function
+
 function [varargout] = safeOpt(hyp, inf_, mean_, cov_, lik_, xt, yt,post,acq_func,opts,algo_data)
-    % SafeOpt function
-    
     safeOpts = opts.safeOpts;
     acqOpts = opts.acqFunc;
     oldSafeOpts.thresholdOffset = 3;
@@ -11,12 +29,10 @@ function [varargout] = safeOpt(hyp, inf_, mean_, cov_, lik_, xt, yt,post,acq_fun
     safeOpts=getopts(oldSafeOpts,safeOpts);
 
     w = @(x) UCB(x,hyp, inf_, mean_, cov_, lik_, xt,post,yt,safeOpts,algo_data) + LCB(x,hyp, inf_, mean_, cov_, lik_, xt,post,yt,safeOpts,algo_data);
-    tic
     xs_safe = safeOpts.xs_safe;
     threshold = safeOpts.threshold;
     thresh_per = safeOpts.thresholdPer;
     thresh_offset = safeOpts.thresholdOffset;
-    %threshold = min(yt)+20;
     U = -UCB(xs_safe, hyp, inf_, mean_, cov_, lik_, xt,post,yt,safeOpts, algo_data);
     if ~isfield(safeOpts,'current_ymin') || safeOpts.current_ymin ~= min(yt) || ~isfield(safeOpts,'threshold_vec')
         safeOpts.current_ymin = min(yt);
@@ -27,16 +43,11 @@ function [varargout] = safeOpt(hyp, inf_, mean_, cov_, lik_, xt, yt,post,acq_fun
     I_S = U <= safeOpts.threshold_vec;
     
     S = xs_safe(I_S,:);
-    toc
-    %disp(U')
-    %disp(S')
     [min_u, I_minU] = min(U);
-    %min_l = LCB(xs_safe(I_minU),hyp, inf_, mean_, cov_, lik_, xt,post,yt,safeOpts,algo_data);
     L = LCB(S,hyp, inf_, mean_, cov_, lik_, xt,post,yt,safeOpts,algo_data);
     I_M = L < min_u;
     M = S(I_M,:);
     S_without_M = S(~I_M,:);
-    %disp(M')
     if length(algo_data.l) == 1
         G_old = S([1,end],:);
     else
@@ -49,9 +60,6 @@ function [varargout] = safeOpt(hyp, inf_, mean_, cov_, lik_, xt, yt,post,acq_fun
         end
     end
     g = false(size(G_old,1),1);
-%         figure(4)
-%         plot(G_old,ones(length(G_old)),'*')
-%         pause(0.5)
     if any(~I_S) && ~isempty(G_old)
         for i = 1:size(G_old,1)
             x_add = G_old(i,:);
@@ -103,7 +111,6 @@ function [varargout] = safeOpt(hyp, inf_, mean_, cov_, lik_, xt, yt,post,acq_fun
         plot(G,ones(length(G),1)*0,'s','MarkerFaceColor','y')
         xlim([xs_safe(1) xs_safe(end)])
         hold off
-        %pause(2)
     end
     
     [m_nacq, I_x] = min(nacq);

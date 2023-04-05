@@ -1,3 +1,20 @@
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+%--------------------------------------------------------------------------------------------
+% Dummy gradient descent implementation. Not recommended to be used.
+
 function X = gradient_descent(X,f,opts,varargin)
     oldOpts.showIts = 0;
     if isempty(opts) || ~isstruct(opts)
@@ -47,18 +64,3 @@ function lp = change_lp(lp,dnlZ_old, dnlZ)
     end
 end
 
-function opts=getopts(opts,newOpts)
-    ch1=fieldnames(newOpts);
-    ch2=fieldnames(opts);
-    for i=1:length(ch1)
-        for j=1:length(ch2)
-            if strcmp(ch1{i},ch2{j})
-                if isstruct(opts.(ch1{i})) && isstruct(newOpts.(ch2{j}))
-                    opts.(ch1{i})=getopts(opts.(ch1{i}),opts.(ch2{j}));
-                else
-                    opts.(ch1{i})=newOpts.(ch2{j});
-                end 
-            end
-        end
-    end
-end

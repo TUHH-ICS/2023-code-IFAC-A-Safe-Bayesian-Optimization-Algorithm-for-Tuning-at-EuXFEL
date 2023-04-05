@@ -1,3 +1,22 @@
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Implements the descent oracle for one dimensional subspaces of 
+% Kirschner,  J.,  Mutny,  M.,  Hiller,  N.,  Ischebeck,  R.,  and Krause, A. (2019). 
+% Adaptive and safe bayesian optimiza-tion in high dimensions via one-dimensional subspaces.
+%--------------------------------------------------------------------------------------------
+
 function [xopt, X, Y, DIM] = lineBO(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,cond,opts_BO,opts_lineBO,varargin)
 % Main that invokes bayesOptima with an subspaces instead of the whole
 % parameter space

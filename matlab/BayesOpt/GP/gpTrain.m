@@ -1,10 +1,20 @@
-function [hyp_new,nlZ,dnlZ]=gpTrain(hyp, inf_, mean_, cov_, lik_, x, y, opts, varargin)
-    if opts.safeOpt || opts.moSaOpt
-        safeOpts = opts.safeOpts;
-        I = y > safeOpts.threshold;
-        y(I) = safeOpts.threshold;
-    end
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
 
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+%--------------------------------------------------------------------------------------------
+
+function [hyp_new,nlZ,dnlZ]=gpTrain(hyp, inf_, mean_, cov_, lik_, x, y, opts, varargin)
     oldOpts.mode = 2;
     oldOpts.repeat = 1;
     oldOpts.rndmInt.mean = repmat([-20,50],size(hyp.mean,1),1);

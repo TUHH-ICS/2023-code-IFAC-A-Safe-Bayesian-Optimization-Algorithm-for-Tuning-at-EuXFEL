@@ -1,3 +1,21 @@
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+%--------------------------------------------------------------------------------------------
+% decreases the threshold at the boundaries of the input space. Supported up
+% to 2 dimensions.
+
 function [threshold_vec] = calc_threshold(tresh_max, tresh_per, xs, opts, algo_data)
 
     oldOpts.thresholdOrder = 1;
@@ -5,7 +23,6 @@ function [threshold_vec] = calc_threshold(tresh_max, tresh_per, xs, opts, algo_d
 
     threshold = opts.threshold;
     n = opts.thresholdOrder;
-    %threshold = algo_data.current_ymin + 20;
     if length(algo_data.l) == 1
         threshold_vec = ones(size(xs,1),1)*threshold;
         l = floor(length(xs)*tresh_per);

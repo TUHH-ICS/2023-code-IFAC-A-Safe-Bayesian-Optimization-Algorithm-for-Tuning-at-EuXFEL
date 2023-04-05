@@ -1,11 +1,11 @@
+% BUILD_MODEL Constructs dynamic model(s) for a laser-lock setup from system parameters.
+% Model time will be scaled in seconds unless changed by `time_unit`, model output will be scaled in
+% 10^sys_params.scaling unless changed by `scaling`. It is assumed that all parameters in sys_params are consistent
+% (e.g. sys_params.k_phi should be scaled according to sys_params.scaling). If specified, uncertain system 
+% parameters are prefixed with "`id`_" to avoid naming conflicts. Returns new system structure with rescaled models.
+% So far, only piezo resonance parameters may be specified as uncertain.
+
 function sys = build_laser_model(sys_params, scaling, time_unit)
-    %BUILD_MODEL Constructs dynamic model(s) for a laser-lock setup from system parameters.
-    % Model time will be scaled in seconds unless changed by `time_unit`, model output will be scaled in
-    % 10^sys_params.scaling unless changed by `scaling`. It is assumed that all parameters in sys_params are consistent
-    % (e.g. sys_params.k_phi should be scaled according to sys_params.scaling). If specified, uncertain system 
-    % parameters are prefixed with "`id`_" to avoid naming conflicts. Returns new system structure with rescaled models.
-    % So far, only piezo resonance parameters may be specified as uncertain.
-    
     arguments
         sys_params
         scaling (1,1) double {mustBeFinite, mustBeInteger} = sys_params.scaling

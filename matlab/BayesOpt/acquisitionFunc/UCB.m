@@ -1,9 +1,9 @@
-function [acq] = UCB(x,hyp,inf_,mean_,cov_,lik_,xt,post,yt,opts,varargin)
 % upper confidence bound
 % varargin{1} could be algo data struct
-% if lineBO build subspace
+% if lineBO the subspace is constructed
 % beta defines the size of the confidence bound
 
+function [acq] = UCB(x,hyp,inf_,mean_,cov_,lik_,xt,post,yt,opts,varargin)
     oldOpts.beta = 2;
     opts = getopts(oldOpts,opts);
     beta = opts.beta;

@@ -1,8 +1,25 @@
-function [acq]=EI(x,hyp,inf_,mean_,cov_,lik_,xt,post,yt,opts,varargin)
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Implements the expected improvement acquisition of 
+% Jones, D.R., Schonlau, M., and Welch, W.J. (1998).  
+% Efficient global optimization of expensive black-box func-tions.
+%--------------------------------------------------------------------------------------------
 % Expected improvement function
 % xi describes the offset
 % maxProb defines whether the acq function should be maximized
-
+function [acq]=EI(x,hyp,inf_,mean_,cov_,lik_,xt,post,yt,opts,varargin)
     oldOpts.xi = 0.01;
     oldOpts.maxProb = 0;
 

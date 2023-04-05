@@ -1,10 +1,10 @@
-function sys = build_link_model(sys_params, scaling, time_unit)
 %build_link_model Constructs dynamic stabilized fiber transmission link model from system parameters.
 % Model time unit is seconds unless changed by `time_unit`, model output will be scaled in
 % 10^sys_params.scaling unless changed by `scaling`. It is assumed that all parameters in sys_params are consistent
 % (e.g. sys_params.k_phi should be scaled according to sys_params.scaling). Returns new system structure with 
 % rescaled models.
-    
+
+function sys = build_link_model(sys_params, scaling, time_unit)
     arguments
         sys_params
         scaling (1,1) double {mustBeFinite, mustBeInteger} = sys_params.scaling

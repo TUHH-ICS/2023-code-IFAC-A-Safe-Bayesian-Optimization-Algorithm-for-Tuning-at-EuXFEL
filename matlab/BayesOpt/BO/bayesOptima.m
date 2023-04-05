@@ -1,5 +1,18 @@
-function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,cond,opts,varargin)
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
 
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+%--------------------------------------------------------------------------------------------
 % This is the main file of the Bayesian Optimization implementation
 % struct hyp includes the hyperparameters
 % inf_ the inference method
@@ -11,6 +24,8 @@ function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_fun
 % cond are lower and upper boundaries for every parameter [lower, upper]
 % opts is a struct with several options
 % varargin can be used to define an x0 or other options as LineBO
+
+function [xopt,yopt,xt,yt]=bayesOptima(hyp,inf_,mean_,cov_,lik_,acq_func,obj_func,cond,opts,varargin)
 
     %%% standard options %%%%
     oldOpts.plot = 0;  % defines if the predictive distributions, acq function etc shall be plotted

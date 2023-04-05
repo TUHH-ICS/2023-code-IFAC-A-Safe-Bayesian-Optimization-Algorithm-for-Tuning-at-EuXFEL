@@ -1,8 +1,23 @@
-function [varargout]=maximizeAcquisition(hyp, inf_, mean_, cov_, lik_, x, y, acq_func,cond,opts,algo_data,varargin)
-    % Find promising inputs depending on the options.
-    % First posterior is calculated to avoid unecessary high computational
-    % load due to matrix inversions
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
 
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+%--------------------------------------------------------------------------------------------
+% Find promising inputs depending on the options.
+% First posterior is calculated to avoid unecessary high computational
+% load due to matrix inversions
+
+function [varargout]=maximizeAcquisition(hyp, inf_, mean_, cov_, lik_, x, y, acq_func,cond,opts,algo_data,varargin)
     D = size(cond,1);
     [~,~, post] = gp(hyp,inf_,mean_, cov_, lik_, x, y);
     if opts.moSaOpt

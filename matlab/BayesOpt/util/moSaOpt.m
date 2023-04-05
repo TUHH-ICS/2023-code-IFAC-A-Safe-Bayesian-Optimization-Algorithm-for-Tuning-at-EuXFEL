@@ -1,5 +1,21 @@
+%------
+% Project: Name and Link
+% Copyright: 
+% License: 
+% References:
+% Authors:
+%------
+
+%---------------------------------------------------------------------------------------------
+% For Paper, 
+% "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
+% by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
+% Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
+% Licensed under the GPLv3. See LICENSE in the project root for license information.
+%----------------------------------------------------------------------------------------------
+
 function [varargout] = moSaOpt(hyp, inf_, mean_, cov_, lik_, xt, yt,post,acq_func,opts,algo_data)
-    % Find the parameters using MoSaOpt. It was used to optimize the LbSync system at Europen XFEL
+    
 
     safeOpts = opts.safeOpts;
     acqOpts = opts.acqFunc;
