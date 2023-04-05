@@ -16,32 +16,33 @@ function [hyp_new,nlZ,dnlZ]=gpTrain(hyp, inf_, mean_, cov_, lik_, x, y, opts, va
     nlZ_v = zeros(opts.repeat,1);
     dnlZ_v = zeros(opts.repeat,1);
     hyp_new = cell(opts.repeat,1);
-    for i = 1:opts.repeat
-        switch mode
-            case 1
-                oldOpts.showIts = 1;
-                opts = getopts(oldOpts,opts);
-                if isempty(varargin)
-                    [hyp_new{i}, nlZ_v(i), dnlZ_v(i)] = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y);
-                else
-                    [hyp_new{i}, nlZ_v(i), dnlZ_v(i)] = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y, varargin{:});
-                end
-            case 2
-                oldOpts.MaxFunEvals = 200;
-                oldOpts.Method = 'qnewton';
-                oldOpts.progTol = eps;
-                oldOpts.optTol = eps;
-                opts = getopts(oldOpts,opts);
-                [hyp_new{i}, nlZ_v(i), dnlZ_v(i)]=minimize_minfunc(hyp, @gp, opts, inf_, mean_, cov_, lik_, x, y);
-            case 3
-                oldOpts.MaxFunEvals = -200;
-                opts = getopts(oldOpts,opts);
-                [hyp_new{i}, funval]=minimize(hyp, @gp, -opts.MaxFunEvals, inf_, mean_, cov_, lik_, x, y);
-                nlZ_v(i)=min(funval);
+    if mode < 4
+        for i = 1:opts.repeat
+            switch mode
+                case 1
+                    oldOpts.showIts = 1;
+                    opts = getopts(oldOpts,opts);
+                    if isempty(varargin)
+                        [hyp_new{i}, nlZ_v(i), dnlZ_v(i)] = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y);
+                    else
+                        [hyp_new{i}, nlZ_v(i), dnlZ_v(i)] = gradient_descent(hyp,@gp,opts,inf_,mean_,cov_,lik_,x,y, varargin{:});
+                    end
+                case 2
+                    oldOpts.MaxFunEvals = 200;
+                    oldOpts.Method = 'qnewton';
+                    oldOpts.progTol = eps;
+                    oldOpts.optTol = eps;
+                    opts = getopts(oldOpts,opts);
+                    [hyp_new{i}, nlZ_v(i), dnlZ_v(i)]=minimize_minfunc(hyp, @gp, opts, inf_, mean_, cov_, lik_, x, y);
+                case 3
+                    oldOpts.MaxFunEvals = -200;
+                    opts = getopts(oldOpts,opts);
+                    [hyp_new{i}, funval]=minimize(hyp, @gp, -opts.MaxFunEvals, inf_, mean_, cov_, lik_, x, y);
+                    nlZ_v(i)=min(funval);
+            end
+            hyp = rand_hyp(opts.rndmInt);
         end
-        %hyp = rand_hyp(opts.rndmInt);
-    end
-    if mode == 4
+    else
         if ~isempty(varargin), algo_data = varargin{1}; end
         l= algo_data.l;
         direct.showits = 1;

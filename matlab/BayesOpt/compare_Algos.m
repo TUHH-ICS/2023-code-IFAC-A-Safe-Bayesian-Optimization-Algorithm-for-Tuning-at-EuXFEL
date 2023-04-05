@@ -195,6 +195,7 @@ opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
 opts.safeOpts.searchCond = 4;
 opts.moSaOpt=1;
+opts.rndmInt.mean = [0,50];
 opts_lBO.maxIt = 40;
 opts_lBO.sharedGP = true;
 opts_lBO.subspaceDim = 1;
