@@ -1,11 +1,3 @@
-%------
-% Project: Name and Link
-% Copyright: 
-% License: 
-% References:
-% Authors:
-%------
-
 %---------------------------------------------------------------------------------------------
 % For Paper, 
 % "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
@@ -17,7 +9,7 @@
 % First posterior is calculated to avoid unecessary high computational
 % load due to matrix inversions
 
-function [varargout]=maximizeAcquisition(hyp, inf_, mean_, cov_, lik_, x, y, acq_func,cond,opts,algo_data,varargin)
+function [varargout]=find_maximum(hyp, inf_, mean_, cov_, lik_, x, y, acq_func,cond,opts,algo_data,varargin)
     D = size(cond,1);
     [~,~, post] = gp(hyp,inf_,mean_, cov_, lik_, x, y);
     if opts.moSaOpt

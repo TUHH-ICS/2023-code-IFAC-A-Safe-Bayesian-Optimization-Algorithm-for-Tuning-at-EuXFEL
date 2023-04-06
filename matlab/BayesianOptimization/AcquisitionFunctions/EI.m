@@ -1,11 +1,3 @@
-%------
-% Project: Name and Link
-% Copyright: 
-% License: 
-% References:
-% Authors:
-%------
-
 %---------------------------------------------------------------------------------------------
 % For Paper, 
 % "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
