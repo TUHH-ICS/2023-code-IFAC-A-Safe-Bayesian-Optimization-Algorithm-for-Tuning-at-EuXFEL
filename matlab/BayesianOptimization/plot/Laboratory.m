@@ -14,7 +14,7 @@ set(groot, 'defaultTextInterpreter','latex')
 % set(groot, 'defaultAxesFontsize',7.5)
 % set(groot, 'defaultTextFontsize',8.25)
 % set(groot, 'defaultLegendFontSize',6.5)
-
+%%
 data1 = "LineBO_Lab_1sec/data";
 
 data2="LineBO_descent_Lab_1sec/data";

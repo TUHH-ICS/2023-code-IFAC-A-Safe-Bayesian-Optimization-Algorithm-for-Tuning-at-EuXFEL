@@ -261,7 +261,7 @@ end
 dir = pwd;
 int = strfind(dir,'/');
 parentDir = dir(1:int(end)-1);
-save(parentDir+"/data"+"name_of_file",'data')  % define file name and path
+save(parentDir+"/data"+"/name_of_file",'data')  % define file name and path
 %%
 function [y] = connect_PI(pi_params, Gg, scale,cond)
 pi_params=backwardCoordTransf(cond,pi_params);
