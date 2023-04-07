@@ -98,6 +98,39 @@ end
 Gg = connect(G{:}, Fr, sums{:}, {'u','w'},{'e','z'});
 
 %%
+algo = 1; % 1: LineBO + MoSaOpt, 2: LineBO + SafeOpt, 3,4: PlaneBO + ...
+switch algo
+    case 1
+        term_acq = 0.1;
+        searchCond = 8;
+        K = 40;
+        mosOpt = 1;
+        subspaceDim = 1;
+        dim_combinations = [];
+    case 2
+        term_acq = 2;
+        searchCond = 8;
+        K = 40;
+        mosOpt = 0;
+        subspaceDim = 1;
+        dim_combinations = [];
+    case 3
+        term_acq = 0.2;
+        searchCond = 11;
+        K = 20;
+        mosOpt = 1;
+        subspaceDim = 2;
+        dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
+    case 4
+        term_acq = 5;
+        searchCond = 11;
+        K = 20;
+        mosOpt = 0;
+        subspaceDim = 2;
+        dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
+end
+
+
 
 Kp_max = 3e1;
 Kp_min = 0.2;
@@ -143,6 +176,7 @@ hyp.mean = 40;
 hyp.cov = log([(cond(:,2)-cond(:,1)).*scale;15]);
 acq = {@EI};
 
+% Start points
 X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0587   10.0596   25.4586
    11.4464   12.9611    0.0290    2.8479    9.9614   40.2759    0.0161    2.5005   23.1119   10.0352
    23.7409   19.1115    0.0196    0.2699    3.5288    8.1776    0.0249    1.4855    5.8534   29.7003
@@ -160,8 +194,8 @@ opts.minFunc.mode=3;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
-opts.trainGP.acqVal = 10;%0.055;%0.5 %1D       %%% 0.05 D=1 with EI; 0.5 D = 1
-opts.termCondAcq = 0.1; % use 2 for LineBO + SafeOpt
+opts.trainGP.acqVal = 10;
+opts.termCondAcq = term_acq;
 opts.maxIt = 500;
 opts.trainGP.It = 501;
 opts.trainGP.train = 1;
@@ -170,15 +204,15 @@ opts.safeOpts.threshold = 50;
 opts.safeOpts.thresholdOffset = 12;
 opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
-opts.safeOpts.searchCond = 8;
-opts.moSaOpt=1;
+opts.safeOpts.searchCond = searchCond; %change to 10 when using PlaneBO
+opts.moSaOpt=mosOpt;
 opts.minFunc.rndmInt.mean = [0,50];
 opts.minFunc.repeat = 5;
-opts_lBO.maxIt = 40;
+opts_lBO.maxIt = K;
 opts_lBO.sharedGP = true;
-opts_lBO.subspaceDim = 1;
+opts_lBO.subspaceDim = subspaceDim;
 opts.beta = 1;
-% opts_lBO.dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
+opts_lBO.dim_combinations = dim_combinations;
 % opts_lBO.oracle = 'descent';
 
 globOpt = 12.1; % so far best
