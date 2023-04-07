@@ -1,5 +1,5 @@
 %---------------------------------------------------------------------------------------------
-% For Paper, 
+% For Paper,
 % "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
 % by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
 % Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
@@ -7,7 +7,7 @@
 % Author(s): Jannis Lübsen, Maximilian Schütte
 %--------------------------------------------------------------------------------------------
 
-%yalmip('clear'); 
+%yalmip('clear');
 clear all; close all;
 %% Configuration
 N = 3;  % Number of repetitions of G in system chain
@@ -40,14 +40,14 @@ Glaser2 = sys.G;
 
 % Link model
 if N_L > 0
-    
+
     sys_link = lbsync.sim.link.short;
     sys_link.Fd.P{1}(end) = -1e-1 * 2*pi;
     G_pz = zpk(sys_link.G_pz);
     G_pz.P{1} = G_pz.P{1}(1:2);
     sys_link.G_pz = ss(G_pz);
     clear G_pz;
-    
+
     sys_link = build_link_model(sys_link, scaling, tunit);
     Glink = sys_link.Gpade;
     %Glink = repmat({Glink}, 1, N_L);
@@ -60,7 +60,7 @@ Fr.y = 'r';
 if N_L < 1
     G = repmat({Glaser}, 1, N);
     sums = cell(1, N);
-   
+
     for i = 1:N
         G{i}.u = {sprintf('w(%d)', i+1);sprintf('u(%d)', i)};
         G{i}.y = sprintf('y(%d)', i);
@@ -138,15 +138,15 @@ Ki_max = 6e1;
 Ki_min = 0;
 
 cond_t=[Kp_min, Kp_max;
-      Ki_min, Ki_max;
-      0, 0.000105*350;
-      0, 3;
-      Kp_min, Kp_max;
-      Ki_min, Ki_max;
-      0, 0.000105*350;
-      0, 3;
-      Kp_min, Kp_max;
-      Ki_min, Ki_max];
+    Ki_min, Ki_max;
+    0, 0.000105*350;
+    0, 3;
+    Kp_min, Kp_max;
+    Ki_min, Ki_max;
+    0, 0.000105*350;
+    0, 3;
+    Kp_min, Kp_max;
+    Ki_min, Ki_max];
 cond = repmat([-1,1],size(cond_t,1),1);
 
 
@@ -178,19 +178,20 @@ acq = {@EI};
 
 % Start points
 X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0587   10.0596   25.4586
-   11.4464   12.9611    0.0290    2.8479    9.9614   40.2759    0.0161    2.5005   23.1119   10.0352
-   23.7409   19.1115    0.0196    0.2699    3.5288    8.1776    0.0249    1.4855    5.8534   29.7003
-   17.3249   50.7107    0.0271    1.7580    7.5527   39.9850    0.0031    1.8779   19.8961   43.7851
-   25.3767   12.5643    0.0203    1.8897    1.1533   36.8828    0.0133    0.1486   14.7892   11.5506
+    11.4464   12.9611    0.0290    2.8479    9.9614   40.2759    0.0161    2.5005   23.1119   10.0352
+    23.7409   19.1115    0.0196    0.2699    3.5288    8.1776    0.0249    1.4855    5.8534   29.7003
+    17.3249   50.7107    0.0271    1.7580    7.5527   39.9850    0.0031    1.8779   19.8961   43.7851
+    25.3767   12.5643    0.0203    1.8897    1.1533   36.8828    0.0133    0.1486   14.7892   11.5506
     3.8679   12.3297    0.0054    0.5672    1.4710   38.1119    0.0104    1.6158   20.9159   29.9470
-   12.6275   12.3585    0.0348    0.2462    3.3501    8.5225    0.0061    1.8629   17.2966    3.1247
+    12.6275   12.3585    0.0348    0.2462    3.3501    8.5225    0.0061    1.8629   17.2966    3.1247
     5.4926   23.9154    0.0049    0.0927   28.1864   18.0784    0.0109    0.9988   14.1186   38.8919
     0.9518   50.5324    0.0205    2.5623   10.5668   26.7616    0.0020    0.5313   19.9517   19.8497
-   24.5825    6.0133    0.0065    1.0789    1.8898   31.3131    0.0123    0.5270    6.4266   54.3092];
+    24.5825    6.0133    0.0065    1.0789    1.8898   31.3131    0.0123    0.5270    6.4266   54.3092];
 
 x0 = [23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408];
-opts.plot=0;
-opts.minFunc.mode=3;
+opts.plot = 0;
+opts.minFunc.mode = 3;
+optsminFunc.maxFunEvals = -50;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
@@ -256,28 +257,28 @@ for i = 1:10
         temp2 = temp2(1);
         data{i,5}=[temp2,yp(temp2)];
     end
-end 
+end
 dir = pwd;
 int = strfind(dir,'/');
 parentDir = dir(1:int(end)-1);
 save(parentDir+"/data"+"name_of_file",'data')  % define file name and path
 %%
 function [y] = connect_PI(pi_params, Gg, scale,cond)
-    pi_params=backwardCoordTransf(cond,pi_params);
-    N = length(pi_params)/2;
-    C = cell(1,N);
-    len_scale = length(scale);
-    for i=1:N
-        C{i} = pid(pi_params(1,2*i-1)*scale(len_scale-mod(i,len_scale)),pi_params(1,2*i)*scale(len_scale-mod(i,len_scale)));
-        C{i}.y = sprintf('u(%d)', i);
-        C{i}.u = sprintf('e(%d)', i);
-    end
-    Gcl = connect(Gg,C{:}, 'w','z');
-    y = norm(Gcl,2)+randn(1)*0.1;           % add small noise term to preserve positive definiteness 
-    fprintf("y = %.2f\n",y)
+pi_params=backwardCoordTransf(cond,pi_params);
+N = length(pi_params)/2;
+C = cell(1,N);
+len_scale = length(scale);
+for i=1:N
+    C{i} = pid(pi_params(1,2*i-1)*scale(len_scale-mod(i,len_scale)),pi_params(1,2*i)*scale(len_scale-mod(i,len_scale)));
+    C{i}.y = sprintf('u(%d)', i);
+    C{i}.u = sprintf('e(%d)', i);
+end
+Gcl = connect(Gg,C{:}, 'w','z');
+y = norm(Gcl,2)+randn(1)*0.1;           % add small noise term to preserve positive definiteness
+fprintf("y = %.2f\n",y)
 end
 
 
-        
-        
-    
+
+
+
