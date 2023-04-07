@@ -38,7 +38,7 @@ function [hyp_new,nlZ,dnlZ]=fitGP(hyp, inf_, mean_, cov_, lik_, x, y, opts, vara
                     opts = getopts(oldOpts,opts);
                     [hyp_new{i}, nlZ_v(i), dnlZ_v(i)]=minimize_minfunc(hyp, @gp, opts, inf_, mean_, cov_, lik_, x, y);
                 case 3
-                    oldOpts.MaxFunEvals = -200;
+                    oldOpts.MaxFunEvals = -50;
                     opts = getopts(oldOpts,opts);
                     [hyp_new{i}, funval]=minimize(hyp, @gp, -opts.MaxFunEvals, inf_, mean_, cov_, lik_, x, y);
                     nlZ_v(i)=min(funval);

@@ -74,8 +74,6 @@ end
 
 for i=1:opts_lineBO.maxIt
     fprintf("\n\n BO subspace no. %d/%d\n\n",i,opts_lineBO.maxIt)
-    %         [yopt,I] = obj_eval(yt);
-    %         xopt = xt(I,:);
     switch opts_lineBO.oracle
         case 'random'
             l = randomOrcale(l_t,opts_lineBO.dim_combinations);

@@ -122,7 +122,7 @@ switch algo
         subspaceDim = 2;
         dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
     case 4
-        term_acq = 5;
+        term_acq = 6;
         searchCond = 11;
         K = 20;
         mosOpt = 0;
@@ -196,7 +196,7 @@ opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
 opts.trainGP.acqVal = 10;
 opts.termCondAcq = term_acq;
-opts.maxIt = 500;
+opts.maxIt = 150;
 opts.trainGP.It = 501;
 opts.trainGP.train = 1;
 opts.safeOpt = 1;
@@ -204,7 +204,8 @@ opts.safeOpts.threshold = 50;
 opts.safeOpts.thresholdOffset = 12;
 opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
-opts.safeOpts.searchCond = searchCond; %change to 10 when using PlaneBO
+opts.safeOpts.searchCond = searchCond;
+opts.safeOpts.explorationIt = 10;
 opts.moSaOpt=mosOpt;
 opts.minFunc.rndmInt.mean = [0,50];
 opts.minFunc.repeat = 5;
@@ -273,9 +274,7 @@ function [y] = connect_PI(pi_params, Gg, scale,cond)
     end
     Gcl = connect(Gg,C{:}, 'w','z');
     y = norm(Gcl,2)+randn(1)*0.1;           % add small noise term to preserve positive definiteness 
-    if y == inf
-        y = 1e4;
-    end
+    fprintf("y = %.2f\n",y)
 end
 
 
