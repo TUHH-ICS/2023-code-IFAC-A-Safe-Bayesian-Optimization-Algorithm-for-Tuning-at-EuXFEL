@@ -18,15 +18,13 @@ set(groot, 'defaultLegendFontSize',10)
 data1 = "LineBO_Lab_1sec/data";
 data2="LineBO_descent_Lab_1sec/data";
 data3="Nelder_Mead_Lab_1sec/data";
-data4 = "LineBO_Lab2/data";
+data4 = "LineBO_Lab/data";
 data5="LineBO_descent_Lab/data";
 data6="Nelder_Mead_Lab/data";
 
 Lab = 1;
 
 x=[];
-if Lab
-    I_d = 2;
     if ~(data1=="")&&exist("data1",'var')
         load(data1)
         data_dim1_1 = data(:,2);
@@ -96,43 +94,6 @@ if Lab
         load(data6)
         data_dim2_3 = data(1:end,1);
     end
-else
-    I_d = 9;
-    if exist("data1",'var')&&~(data1=="")
-        load(data1)
-        data_dim1_1 = data(:,9);
-        data_x1 = data(:,8);
-        yopts1=cell2mat(data(:,11));
-        x(1,:) = cell2mat(data(:,2));
-    end
-    if exist("data2",'var')&&~(data2=="")
-        load(data2)
-        data_dim1_2 = data(:,9);
-        data_x2 = data(:,8);
-        yopts2=cell2mat(data(:,11));
-        x(2,:) = cell2mat(data(:,2));
-    end
-    if exist("data3",'var')&&~(data3=="")
-        load(data3)
-        data_dim1_3 = data(:,9);
-        x(3,:) = cell2mat(data(:,2));
-    end
-    if exist("data4",'var')&&~(data4=="")
-        load(data4)
-        data_dim2_1 = data(:,9);
-        x(4,:) = cell2mat(data(:,2));
-    end
-    if exist("data5",'var')&&~(data5=="")
-        load(data5)
-        data_dim2_2 = data(:,9);
-        x(5,:) = cell2mat(data(:,2));
-    end
-    if exist("data6",'var')&&~(data6=="")
-        load(data6)
-        data_dim2_3 = data(:,9);
-        x(6,:) = cell2mat(data(:,2));
-    end
-end
 %%
 
 f_alpha = 0.2;
@@ -168,6 +129,8 @@ X=1:length(Y);
 p3=plot(X,Y,'-','Color','k'	,LineWidth=1.2);
 [yopt,xopt]=min(Y);
 p31 = plot(xopt,yopt,'*','Color','k'	,'MarkerSize',10);
+p32 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],'k','EdgeColor','none');
+p32.FaceAlpha = f_alpha;
 grid on
 xlim([0 130])
 ax = gca;
@@ -183,7 +146,7 @@ ax=gca;
 ax.Box='on';
 ax.FontSize=10;
 hold on
-y = data_dim2_1;
+y = data_dim2_1(:,1);
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
 p4=plot(X,Y,'--','Color',[0 0.4470 0.7410]	,LineWidth=1.2);
@@ -192,13 +155,14 @@ p41 = plot(xopt,yopt,'*','Color',[0 0.4470 0.7410]	,'MarkerSize',10);
 p42 = fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0 0.4470 0.7410],'EdgeColor','none');
 p42.FaceAlpha = 2*f_alpha;
 
-y = data_dim2_2(:,1);
+y = data_dim2_2;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
 p5=plot(X,Y,'--','Color',[0.8500 0.3250 0.0980]	,LineWidth=1.2);
 [yopt,xopt]=min(Y);
 p51 = plot(xopt,yopt,'*','Color',[0.8500 0.3250 0.0980]	,'MarkerSize',10);
 p52=fill([X,flip(X,2)],[Y+std_Y,flip(Y-std_Y,2)],[0.8500 0.3250 0.0980],'FaceAlpha',2*f_alpha,'EdgeColor','none');
+
 y = data_dim2_3;
 [Y,std_Y]=getvals(y);
 X=1:length(Y);
@@ -237,4 +201,28 @@ else
     l2.Units='centimeters';
     l1.Units='centimeters';
     l2.Position(1:2)=[l1.Position(1)-3,l1.Position(2)];
+end
+
+function [Y,std_Y] = getvals(y)
+yt=cell(1,length(y));
+for i = 1:length(y)
+    temp = y{i};
+    if iscell(temp)
+        temp = temp(~cellfun('isempty',temp));
+        temp = temp{end};
+        yt{i}=temp;
+    else
+        yt{i} = temp;
+    end
+end
+len=max(cellfun('length',yt));
+for i = 1:length(yt)
+    temp = ones(len,1)*min(yt{i});
+    temp(1:length(yt{i})) = yt{i};
+    for j=1:len
+        yt1(i,j)=min(temp(1:j));
+    end
+end
+std_Y=std(yt1);
+Y = mean(yt1,1);
 end
