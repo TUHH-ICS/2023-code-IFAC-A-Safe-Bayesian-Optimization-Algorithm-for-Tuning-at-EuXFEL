@@ -4,6 +4,7 @@
 % by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
 % Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
 % Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Author(s): Jannis Lübsen
 %--------------------------------------------------------------------------------------------
 % Find promising inputs depending on the options.
 % First posterior is calculated to avoid unecessary high computational

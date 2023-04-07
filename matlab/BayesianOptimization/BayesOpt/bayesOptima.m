@@ -1,17 +1,10 @@
-%------
-% Project: Name and Link
-% Copyright:
-% License:
-% References:
-% Authors:
-%------
-
 %---------------------------------------------------------------------------------------------
 % For Paper,
 % "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
 % by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
 % Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
 % Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Author(s): Jannis Lübsen
 %--------------------------------------------------------------------------------------------
 % This is the main file of the Bayesian Optimization implementation
 % struct hyp includes the hyperparameters
@@ -50,14 +43,7 @@ else
     opts=getopts(oldOpts,opts);
 end
 
-if isstruct(obj_func)
-    fun_in = obj_func.in;
-    fun_out = obj_func.out;
-else
-    fun_in = obj_func;
-    fun_out = [];
-end
-hyp_old = hyp;
+fun_in = obj_func;
 coolDown = opts.trainGP.coolDown;
 gp_cd = 0;
 checkGP_train = false;
@@ -162,9 +148,9 @@ end
 opts.algo_data = algo_data;
 
 for i=1:opts.maxIt
+    algo_data.it = i;
     fprintf("\niteration: %d\n", i);
     start = tic;
-
     try
         [x_new, min_nacq, algo_data] = find_new_parameters(hyp,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),acq_func,cond_acq,opts,algo_data,xs);
     catch ME
@@ -182,7 +168,7 @@ for i=1:opts.maxIt
 
     if checkGP_train && gp_cd == 0
         disp(newline+"cov hyp: "+num2str(hyp.cov')+"    lik hyp: "+num2str(hyp.lik))
-        [hyp,~,~]=gpTrain(hyp,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),opts,algo_data);
+        [hyp,~,~]=fitGP(hyp,inf_,mean_,cov_,lik_,xt(1:counter,:),yt(1:counter,:),opts,algo_data);
         gp_cd = coolDown;
         disp(newline+"cov hyp: "+num2str(hyp.cov')+"    lik hyp: "+num2str(hyp.lik))
         try
@@ -210,11 +196,6 @@ for i=1:opts.maxIt
     gp_cd = gp_cd - 1;
     if gp_cd < 0
         gp_cd = 0;
-    end
-
-    % if a output function exist execute
-    if ~isempty(fun_out)
-        fun_out(x_new)
     end
 
     stop=toc(start);

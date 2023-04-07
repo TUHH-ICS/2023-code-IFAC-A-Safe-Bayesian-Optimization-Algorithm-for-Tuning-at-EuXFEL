@@ -1,17 +1,10 @@
-%------
-% Project: Name and Link
-% Copyright: 
-% License: 
-% References:
-% Authors:
-%------
-
 %---------------------------------------------------------------------------------------------
 % For Paper, 
 % "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
 % by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
 % Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
 % Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Author(s): Jannis Lübsen, Maximilian Schütte
 %--------------------------------------------------------------------------------------------
 
 %yalmip('clear'); 
@@ -140,12 +133,11 @@ else
     end
 end
 
-cov_matern = @(varargin)covMaternard(3,varargin);
 
 inf_ = {@infGaussLik};
 mean_ = {@meanConst};
 lik_ = {@likGauss};
-cov_ = {@(varargin)covMaternard(3,varargin{:})};
+cov_ = {@covMaternard,3};
 hyp.lik = log(0.5);
 hyp.mean = 40;
 hyp.cov = log([(cond(:,2)-cond(:,1)).*scale;15]);
@@ -164,31 +156,32 @@ X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0
 
 x0 = [23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408];
 opts.plot=0;
-opts.minFunc.mode=2;
+opts.minFunc.mode=3;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
-opts.trainGP.acqVal = 10;
-opts.termCondAcq = 0.1;
+opts.trainGP.acqVal = 10;%0.055;%0.5 %1D       %%% 0.05 D=1 with EI; 0.5 D = 1
+opts.termCondAcq = 0.1; % use 2 for LineBO + SafeOpt
 opts.maxIt = 500;
 opts.trainGP.It = 501;
 opts.trainGP.train = 1;
 opts.safeOpt = 1;
 opts.safeOpts.threshold = 50;
-opts.safeOpts.thresholdOffset = 10;
+opts.safeOpts.thresholdOffset = 12;
 opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
-opts.safeOpts.searchCond = 4;
+opts.safeOpts.searchCond = 8;
 opts.moSaOpt=1;
 opts.minFunc.rndmInt.mean = [0,50];
 opts.minFunc.repeat = 5;
 opts_lBO.maxIt = 40;
 opts_lBO.sharedGP = true;
 opts_lBO.subspaceDim = 1;
+opts.beta = 1;
 % opts_lBO.dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
 % opts_lBO.oracle = 'descent';
 
-globOpt = 11.8;
+globOpt = 12.1; % so far best
 data = cell(10,11);
 fun = @(params) connect_PI(params, Gg, [1/sys.k_phi 1/sys_link.k_phi],cond_t);
 for i = 1:10
@@ -228,8 +221,11 @@ for i = 1:10
         temp2 = temp2(1);
         data{i,5}=[temp2,yp(temp2)];
     end
-end
-save("data_mos",'data')  % define file name and path
+end 
+dir = pwd;
+int = strfind(dir,'/');
+parentDir = dir(1:int(end)-1);
+save(parentDir+"/data"+"name_of_file",'data')  % define file name and path
 %%
 function [y] = connect_PI(pi_params, Gg, scale,cond)
     pi_params=backwardCoordTransf(cond,pi_params);

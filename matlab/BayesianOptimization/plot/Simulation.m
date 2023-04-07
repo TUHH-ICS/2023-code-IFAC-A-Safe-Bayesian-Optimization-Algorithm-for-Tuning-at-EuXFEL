@@ -1,17 +1,10 @@
-%------
-% Project: Name and Link
-% Copyright: 
-% License: 
-% References:
-% Authors:
-%------
-
 %---------------------------------------------------------------------------------------------
-% For Paper, 
+% For Paper,
 % "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL"
 % by Jannis O. Lübsen, Maximilian Schütte, Sebastian Schulz, Annika Eichler
 % Copyright (c) Institute of Control Systems, Hamburg University of Technology. All rights reserved.
 % Licensed under the GPLv3. See LICENSE in the project root for license information.
+% Author(s): Jannis Lübsen
 %--------------------------------------------------------------------------------------------
 
 clear all
@@ -88,41 +81,41 @@ hold off
 
 
 function [Y,std_Y] = getvals(y)
-    yt=cell(1,length(y));
-    for i = 1:length(y)
-        temp = y{i};
-        if iscell(temp)
-            temp = temp(~cellfun('isempty',temp));
-            temp = temp{end};
-            yt{i}=temp;
-        else
-            yt{i} = temp;
-        end
+yt=cell(1,length(y));
+for i = 1:length(y)
+    temp = y{i};
+    if iscell(temp)
+        temp = temp(~cellfun('isempty',temp));
+        temp = temp{end};
+        yt{i}=temp;
+    else
+        yt{i} = temp;
     end
-    len=max(cellfun('length',yt));
-    for i = 1:length(yt)
-        temp = ones(len,1)*min(yt{i});
-        temp(1:length(yt{i})) = yt{i};
-        for j=1:len
-            yt1(i,j)=min(temp(1:j));
-        end
+end
+len=max(cellfun('length',yt));
+for i = 1:length(yt)
+    temp = ones(len,1)*min(yt{i});
+    temp(1:length(yt{i})) = yt{i};
+    for j=1:len
+        yt1(i,j)=min(temp(1:j));
     end
-    std_Y=std(yt1);
-    Y = mean(yt1,1);
+end
+std_Y=std(yt1);
+Y = mean(yt1,1);
 end
 
 function varargout = find_dispersedParams(x0)
-    t=x0;
-    t=reshape(t,[10,1,2,5]);
-    t1=permute(t,[2,1,3,4]);
-    t2 = bsxfun(@minus,t1,t);
-    t3=reshape(t2,100,2,5);
-    t3=squeeze(vecnorm(t3,2,2));
-    t3=reshape(t3,10,10,5);
-    t3=sum(t3,1);
-    t3=sum(t3,3);
-    [~,vals] = sort(t3,'descend');
-    vals = sort(vals(1:4));
-    varargout{1}=x0(vals,:);
-    varargout{2}=vals;
+t=x0;
+t=reshape(t,[10,1,2,5]);
+t1=permute(t,[2,1,3,4]);
+t2 = bsxfun(@minus,t1,t);
+t3=reshape(t2,100,2,5);
+t3=squeeze(vecnorm(t3,2,2));
+t3=reshape(t3,10,10,5);
+t3=sum(t3,1);
+t3=sum(t3,3);
+[~,vals] = sort(t3,'descend');
+vals = sort(vals(1:4));
+varargout{1}=x0(vals,:);
+varargout{2}=vals;
 end
