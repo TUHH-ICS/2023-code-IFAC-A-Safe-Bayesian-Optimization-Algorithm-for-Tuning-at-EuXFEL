@@ -6,7 +6,7 @@
 
 This repository contains the simulation code to reproduce the tables and figures presented in 
 
-> J.O. Lübsen, M. Schütte, S. Schulz, A. Eichler, "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL", submitted to the 22nd World Congress of the International Federation of Automatic Control, 2023
+> J. O. Lübsen, M. Schütte, S. Schulz, A. Eichler, "A Safe Bayesian Optimization Algorithm for Tuning the Optical Synchronization System at European XFEL", submitted to the 22nd World Congress of the International Federation of Automatic Control, 2023
 
 It may be used as an safe Bayesian Optimization framework to optimize arbitarily functions or to recreate and validate the figures from the paper.
 
@@ -15,11 +15,11 @@ To reproduce the figures, run the MATLAB file 'testAlgorithm.m' and use the sett
 
 ## Prerequisites
 
-To run the scripts in this repository, you will need a working copy of the GPML toolbox (https://gitlab.com/hnickisch/gpml-matlab)
+To run the scripts in this repository, you will need a working copy of the GPML toolbox (https://gitlab.com/hnickisch/gpml-matlab).
 The code in this repository has been tested in the following environment:
 
 * *Linux Ubuntu* 20.04.6 LTS
-* *Matlab* 2021b
+* *MATLAB* 2021b
 * *GPML Toolbox* v4.2+dev2 
 
 
