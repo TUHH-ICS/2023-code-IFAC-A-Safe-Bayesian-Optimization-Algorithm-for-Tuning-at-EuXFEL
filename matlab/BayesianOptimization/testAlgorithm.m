@@ -171,10 +171,13 @@ inf_ = {@infGaussLik};
 mean_ = {@meanConst};
 lik_ = {@likGauss};
 cov_ = {@covMaternard,3};
+acq = {@EI};
+
+% initial hyperparameter
 hyp.lik = log(0.5);
 hyp.mean = 40;
 hyp.cov = log([(cond(:,2)-cond(:,1)).*scale;15]);
-acq = {@EI};
+
 
 % Start points
 X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0587   10.0596   25.4586
@@ -188,16 +191,21 @@ X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0
     0.9518   50.5324    0.0205    2.5623   10.5668   26.7616    0.0020    0.5313   19.9517   19.8497
     24.5825    6.0133    0.0065    1.0789    1.8898   31.3131    0.0123    0.5270    6.4266   54.3092];
 
-x0 = [23.71978, 13.51946, 0.01, 2.5, 9.57467, 26.47217, 0.02, 3, 3.19737, 12.91408];
-opts.plot = 0;
+opts.plot = 0; % = 1 to see plots
 opts.minFunc.mode = 3;
 optsminFunc.maxFunEvals = -50;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
 opts.trainGP.acqVal = 10;
+
+% termination conditions, change so see how they impact the convergence rate
 opts.termCondAcq = term_acq;
+opts.safeOpts.searchCond = searchCond;
+opts.safeOpts.explorationIt = 150;
 opts.maxIt = 150;
+opts_lBO.maxIt = K;
+
 opts.trainGP.It = 501;
 opts.trainGP.train = 1;
 opts.safeOpt = 1;
@@ -205,12 +213,9 @@ opts.safeOpts.threshold = 50;
 opts.safeOpts.thresholdOffset = 12;
 opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
-opts.safeOpts.searchCond = searchCond;
-opts.safeOpts.explorationIt = 150;
 opts.moSaOpt=mosOpt;
 opts.minFunc.rndmInt.mean = [0,50];
 opts.minFunc.repeat = 5;
-opts_lBO.maxIt = K;
 opts_lBO.sharedGP = true;
 opts_lBO.subspaceDim = subspaceDim;
 opts.beta = 1;
