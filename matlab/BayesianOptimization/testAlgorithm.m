@@ -101,29 +101,29 @@ Gg = connect(G{:}, Fr, sums{:}, {'u','w'},{'e','z'});
 algo = 1; % 1: LineBO + MoSaOpt, 2: LineBO + SafeOpt, 3,4: PlaneBO + ...
 switch algo
     case 1
-        term_acq = 0.1;
-        searchCond = 8;
+        term_acq = 0.05;
+        searchCond = 6;
         K = 40;
         mosOpt = 1;
         subspaceDim = 1;
         dim_combinations = [];
     case 2
-        term_acq = 2;
-        searchCond = 8;
+        term_acq = 1;
+        searchCond = 6;
         K = 40;
         mosOpt = 0;
         subspaceDim = 1;
         dim_combinations = [];
     case 3
-        term_acq = 0.2;
-        searchCond = 11;
+        term_acq = 0.4;
+        searchCond = 8;
         K = 20;
         mosOpt = 1;
         subspaceDim = 2;
         dim_combinations = [1,2;3,4;5,6;7,8;9,10;1,5;1,9;5,9];
     case 4
-        term_acq = 6;
-        searchCond = 11;
+        term_acq = 3;
+        searchCond = 8;
         K = 20;
         mosOpt = 0;
         subspaceDim = 2;
@@ -155,8 +155,8 @@ if N_L == 0
     scale = repmat(scale,[N+N_L,1]);
 else
     scale =[];
-    scale1 = [1/8; 1/5];
-    scale2 = [1/8; 1/8];
+    scale1 = [1/5; 1/2];
+    scale2 = [1/5; 1/5];
     for i = 1:N+N_L
         if mod(i,2)
             scale=[scale;scale1];
@@ -206,7 +206,7 @@ opts.safeOpts.thresholdOffset = 12;
 opts.safeOpts.thresholdPer = 0.2;
 opts.safeOpts.thresholdOrder = 1;
 opts.safeOpts.searchCond = searchCond;
-opts.safeOpts.explorationIt = 10;
+opts.safeOpts.explorationIt = 150;
 opts.moSaOpt=mosOpt;
 opts.minFunc.rndmInt.mean = [0,50];
 opts.minFunc.repeat = 5;
