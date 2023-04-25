@@ -193,7 +193,7 @@ X0 = [20.6963   21.5537    0.0271    1.1841   20.5658   42.2428    0.0163    0.0
 
 opts.plot = 0; % = 1 to see plots
 opts.minFunc.mode = 3;
-optsminFunc.maxFunEvals = -50;
+opts.minFunc.MaxFunEvals = 50;
 opts.maxProb = 0;
 opts.acqFunc.xi = 0.01;
 opts.acqFunc.beta = 2;
