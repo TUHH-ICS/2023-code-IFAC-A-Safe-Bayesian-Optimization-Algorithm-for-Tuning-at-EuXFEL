@@ -28,6 +28,7 @@ data5="LineBO_descent_Lab/data";
 data6="Nelder_Mead_Lab/data";
 
 x=[];
+Lab=1;
 if ~(data1=="")&&exist("data1",'var')
     load(data1)
     data_dim1_1 = data(:,2);
